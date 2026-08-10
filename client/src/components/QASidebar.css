@@ -1,0 +1,198 @@
+/* QASidebar.css - Executive Navigation Sidebar */
+.qa-sidebar {
+    width: 260px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background: #121212;
+    border-right: 1px solid #242424;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem 1rem;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.qa-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 1.25rem;
+    border-bottom: 1px solid #222;
+}
+
+.qa-sidebar-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(224, 170, 62, 0.15);
+    border: 1px solid rgba(224, 170, 62, 0.3);
+    color: #E0AA3E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qa-sidebar-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #E0AA3E;
+    letter-spacing: 0.08em;
+}
+
+.qa-sidebar-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #FFF;
+    margin: 0;
+}
+
+.qa-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 1.25rem;
+    flex-grow: 1;
+}
+
+.qa-nav-section-title {
+    font-size: 0.675rem;
+    font-weight: 800;
+    color: #666;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.6rem;
+}
+
+.qa-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 9px;
+    color: #9CA3AF;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.qa-nav-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #FFF;
+}
+
+.qa-nav-item.active {
+    background: linear-gradient(135deg, #E0AA3E, #B8860B);
+    color: #0F0F0F;
+}
+
+.qa-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #222;
+}
+
+.qa-theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: #1A1A1A;
+    border: 1px solid #2A2A2A;
+    color: #DDD;
+    font-size: 0.775rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.qa-sidebar-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #181818;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+}
+
+.qa-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.qa-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #E0AA3E;
+    color: #0F0F0F;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.qa-user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.qa-user-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #FFF;
+}
+
+.qa-user-role {
+    font-size: 0.675rem;
+    color: #888;
+}
+
+.qa-logout-btn {
+    background: transparent;
+    border: none;
+    color: #EF4444;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Light Theme Overrides */
+html[data-theme='light'] .qa-sidebar {
+    background: #FFFFFF;
+    border-right-color: #E2E8F0;
+}
+
+html[data-theme='light'] .qa-sidebar-title,
+html[data-theme='light'] .qa-user-name {
+    color: #0F172A;
+}
+
+html[data-theme='light'] .qa-nav-item:not(.active) {
+    color: #475569;
+}
+
+html[data-theme='light'] .qa-nav-item:not(.active):hover {
+    background: #F1F5F9;
+    color: #0F172A;
+}
+
+html[data-theme='light'] .qa-sidebar-user {
+    background: #F8FAFC;
+    border-color: #E2E8F0;
+}
+
+html[data-theme='light'] .qa-theme-toggle-btn {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #334155;
+}

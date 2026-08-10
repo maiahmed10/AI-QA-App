@@ -219,6 +219,62 @@ async function main() {
     });
     console.log('✅ Created dashboard for', org2.name);
 
+    // ============================================================================
+    // SEED SHADOWMATE EDTECH DATA
+    // ============================================================================
+
+    console.log('\n🎓 Seeding ShadowMate academic tracks & student profile...');
+
+    const track1 = await prisma.academicTrack.upsert({
+        where: { code: 'AI_ML' },
+        update: {},
+        create: {
+            organizationId: org1.id,
+            trackName: 'Artificial Intelligence & Machine Learning',
+            code: 'AI_ML',
+            description: 'Master neural networks, deep learning, Python, and agentic AI workflows.',
+            icon: 'Brain',
+            requiredSkills: ['Problem Solving', 'Python', 'Logical Thinking', 'Math'],
+            careerOutcomes: ['AI Engineer', 'ML Researcher', 'Data Scientist']
+        }
+    });
+
+    const track2 = await prisma.academicTrack.upsert({
+        where: { code: 'SE_FULLSTACK' },
+        update: {},
+        create: {
+            organizationId: org1.id,
+            trackName: 'Full-Stack Software Engineering',
+            code: 'SE_FULLSTACK',
+            description: 'Build modern scalable web systems, databases, and microservices.',
+            icon: 'Code2',
+            requiredSkills: ['Logical Thinking', 'JavaScript', 'Problem Solving', 'Web Development'],
+            careerOutcomes: ['Full Stack Developer', 'Software Architect', 'Frontend Lead']
+        }
+    });
+
+    console.log('✅ Seeded Academic Tracks:', track1.trackName, ',', track2.trackName);
+
+    // Initial student learning profile for demo user
+    await prisma.studentLearningProfile.upsert({
+        where: { userId: user.id },
+        update: {},
+        create: {
+            userId: user.id,
+            organizationId: org1.id,
+            avgActualVsEstRatio: 0.85, // finishes 15% faster
+            preferredStudyHours: { morning: 20, afternoon: 30, evening: 50 },
+            preferredSessionDuration: 45,
+            dailyStudyCapacityMinutes: 180,
+            skills: ['Problem Solving', 'Python', 'Logical Thinking'],
+            interests: ['Artificial Intelligence', 'Software Development'],
+            focusPattern: { peakFocusHour: 16, avgFocusScore: 4.2 },
+            dataConfidenceScore: 0.6
+        }
+    });
+
+    console.log('✅ Seeded Student Learning Profile for', user.email);
+
     console.log('');
     console.log('🎉 Multi-tenant SAAS database seeded successfully!');
     console.log('');

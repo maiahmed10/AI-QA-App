@@ -15,7 +15,12 @@
         "projects": "Projects",
         "tasks": "Tasks",
         "team": "Team",
-        "customers": "Customers"
+        "customers": "Customers",
+        "planner": "Adaptive Planner",
+        "assignments": "Assignments",
+        "recommendations": "Track Engine",
+        "memory": "Memory Profile",
+        "adminTracks": "Catalog Admin"
     },
     "copilots": {
         "title": "Co-Pilots",

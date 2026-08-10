@@ -1,0 +1,157 @@
+/* QALoginPage.css - Executive Dark & Gold Login Interface */
+.qa-login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0F0F0F;
+    color: #F2F3EC;
+    padding: 1.5rem;
+}
+
+.qa-login-card {
+    width: 100%;
+    max-width: 440px;
+    background: #141414;
+    border: 1px solid #262626;
+    border-radius: 16px;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.qa-login-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.qa-brand-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(224, 170, 62, 0.2), rgba(184, 134, 11, 0.1));
+    border: 1px solid rgba(224, 170, 62, 0.3);
+    color: #E0AA3E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qa-brand-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #E0AA3E;
+    letter-spacing: 0.08em;
+}
+
+.qa-brand-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #FFF;
+    margin: 0;
+}
+
+.qa-login-subtitle {
+    font-size: 0.85rem;
+    color: #9CA3AF;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+.qa-login-error {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #EF4444;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    margin-bottom: 1.25rem;
+}
+
+.qa-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.qa-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.qa-input-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #D1D5DB;
+}
+
+.qa-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.qa-field-icon {
+    position: absolute;
+    left: 0.85rem;
+    color: #6B7280;
+}
+
+.qa-form-input {
+    width: 100%;
+    background: #0D0D0D;
+    border: 1px solid #2A2A2A;
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem 0.75rem 2.6rem;
+    color: #FFF;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.qa-form-input:focus {
+    border-color: #E0AA3E;
+}
+
+.qa-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #E0AA3E, #B8860B);
+    color: #0F0F0F;
+    font-weight: 800;
+    font-size: 0.925rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: transform 0.15s, opacity 0.2s;
+}
+
+.qa-login-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.qa-login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.qa-login-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #222;
+}
+
+.qa-preset-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.775rem;
+    color: #888;
+}

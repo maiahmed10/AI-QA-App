@@ -5,7 +5,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import {
     Home, Users, BarChart2, Bot, FileText, HelpCircle,
     GraduationCap, Settings, LogOut, Sun, Moon, Search,
-    ChevronRight, ChevronDown, BarChart3, FolderOpen
+    ChevronRight, ChevronDown, BarChart3, FolderOpen, Calendar, Brain, ShieldCheck
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -79,13 +79,14 @@ const Sidebar = () => {
 
     // All searchable items (flattened for search)
     const allSearchableItems = [
-        { id: 'home', label: t('nav.dashboard', 'Dashboard'), path: '/', icon: Home, keywords: ['home', 'dashboard'] },
-        { id: 'copilots', label: t('copilots.title', 'Co-Pilots'), path: '/copilots', icon: Users, keywords: ['copilots', 'ai', 'assistants', 'chat'] },
-        { id: 'documents', label: t('nav.documents', 'Documents'), path: '/documents', icon: FolderOpen, keywords: ['documents', 'files', 'library', 'archive'] },
-        { id: 'dashboards', label: t('nav.dashboards', 'Dashboards'), path: '/analytics/dashboards', icon: BarChart3, keywords: ['dashboards', 'analytics', 'charts', 'sql'] },
-        { id: 'report-bot', label: t('nav.reportBot', 'Report Bot'), path: '/report-bot', icon: Bot, keywords: ['report', 'bot', 'ai', 'generate'] },
-        { id: 'reports-explorer', label: t('nav.reportsExplorer', 'Reports Explorer'), path: '/reports', icon: FileText, keywords: ['reports', 'explorer', 'view'] },
-        { id: 'settings', label: t('nav.settings', 'Settings'), path: '/settings', icon: Settings, keywords: ['settings', 'preferences', 'config'] },
+        { id: 'qa', label: 'AI QA Assistant', path: '/', icon: ShieldCheck, keywords: ['qa', 'test', 'cases', 'requirements', 'risks'] },
+        { id: 'dashboard', label: t('nav.dashboard', 'Dashboard'), path: '/qa-assistant', icon: Home, keywords: ['home', 'dashboard'] },
+        { id: 'planner', label: t('nav.planner', 'Adaptive Planner'), path: '/planner', icon: Calendar, keywords: ['planner', 'schedule', 'replan'] },
+        { id: 'assignments', label: t('nav.assignments', 'Assignments'), path: '/assignments', icon: FileText, keywords: ['assignments', 'tasks', 'due'] },
+        { id: 'recommendations', label: t('nav.recommendations', 'Track Recommendations'), path: '/recommendations', icon: GraduationCap, keywords: ['track', 'recommendations', 'career'] },
+        { id: 'memory', label: t('nav.memory', 'Memory Profile'), path: '/memory', icon: Brain, keywords: ['memory', 'profile', 'pace'] },
+        { id: 'copilots', label: t('copilots.title', 'AI Co-Pilot'), path: '/copilots', icon: Users, keywords: ['copilot', 'ai', 'tutor', 'chat'] },
+        { id: 'admin-tracks', label: t('nav.adminTracks', 'Catalog Admin'), path: '/admin/tracks', icon: Settings, keywords: ['admin', 'tracks', 'catalog'] },
     ];
 
     // Search filtering
@@ -108,12 +109,12 @@ const Sidebar = () => {
         <aside className="sidebar">
             {/* Header */}
             <div className="sidebar-header">
-                <div className="sidebar-logo">
-                    <img src="/assets/logo.png" alt="MicroMind Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ShieldCheck size={28} style={{ color: 'var(--primary-color)' }} />
                 </div>
                 <div className="sidebar-branding">
-                    <div className="brand-name">MicroMind</div>
-                    <div className="product-name">Base Template</div>
+                    <div className="brand-name">QA Agent Pro</div>
+                    <div className="product-name">AI Testing Suite</div>
                 </div>
             </div>
 
@@ -154,78 +155,71 @@ const Sidebar = () => {
 
             {/* Navigation */}
             <nav className="sidebar-nav">
-                {/* Home / Dashboard */}
+                {/* AI QA Assistant Primary Item */}
                 <button
-                    className={`nav-item ${isActive('/') && location.pathname === '/' ? 'active' : ''}`}
+                    className={`nav-item ${location.pathname === '/' || location.pathname === '/qa' ? 'active' : ''}`}
                     onClick={() => handleNavigation('/')}
                 >
-                    <Home size={18} className="nav-icon" />
-                    <span className="nav-label">{t('nav.dashboard', 'Dashboard')}</span>
+                    <ShieldCheck size={18} className="nav-icon" style={{ color: '#E0AA3E' }} />
+                    <span className="nav-label" style={{ fontWeight: 700 }}>AI QA Assistant</span>
                 </button>
 
-                {/* AUTOMATION SECTION */}
+                {/* SHADOWMATE STUDENT SECTION */}
                 <div className="nav-section">
-                    <div className="section-label">{t('nav.automation', 'Automation')}</div>
+                    <div className="section-label">STUDENT WORKSPACE</div>
 
-                    {/* My Co-Pilots */}
                     <button
-                        className={`nav-item ${isActive('/copilots') ? 'active' : ''}`}
+                        className={`nav-item ${location.pathname === '/planner' ? 'active' : ''}`}
+                        onClick={() => handleNavigation('/planner')}
+                    >
+                        <Calendar size={18} className="nav-icon" />
+                        <span className="nav-label">{t('nav.planner', 'Adaptive Planner')}</span>
+                    </button>
+
+                    <button
+                        className={`nav-item ${location.pathname === '/assignments' ? 'active' : ''}`}
+                        onClick={() => handleNavigation('/assignments')}
+                    >
+                        <FileText size={18} className="nav-icon" />
+                        <span className="nav-label">{t('nav.assignments', 'Assignments')}</span>
+                    </button>
+
+                    <button
+                        className={`nav-item ${location.pathname === '/recommendations' ? 'active' : ''}`}
+                        onClick={() => handleNavigation('/recommendations')}
+                    >
+                        <GraduationCap size={18} className="nav-icon" />
+                        <span className="nav-label">{t('nav.recommendations', 'Track Engine')}</span>
+                    </button>
+
+                    <button
+                        className={`nav-item ${location.pathname === '/memory' ? 'active' : ''}`}
+                        onClick={() => handleNavigation('/memory')}
+                    >
+                        <Brain size={18} className="nav-icon" />
+                        <span className="nav-label">{t('nav.memory', 'Memory Profile')}</span>
+                    </button>
+
+                    <button
+                        className={`nav-item ${location.pathname === '/copilots' ? 'active' : ''}`}
                         onClick={() => handleNavigation('/copilots')}
                     >
                         <Users size={18} className="nav-icon" />
-                        <span className="nav-label">{t('nav.copilots', 'Co-Pilots')}</span>
-                    </button>
-
-                    {/* Documents Library */}
-                    <button
-                        className={`nav-item ${isActive('/documents') ? 'active' : ''}`}
-                        onClick={() => handleNavigation('/documents')}
-                    >
-                        <FolderOpen size={18} className="nav-icon" />
-                        <span className="nav-label">{t('nav.documents', 'Documents')}</span>
+                        <span className="nav-label">{t('nav.copilots', 'Study Co-Pilot')}</span>
                     </button>
                 </div>
 
-                {/* ANALYTICS SECTION */}
+                {/* ADMIN SECTION */}
                 <div className="nav-section">
-                    <div className="section-label">{t('nav.analytics', 'Analytics')}</div>
+                    <div className="section-label">ADMINISTRATION</div>
 
-                    {/* Analytics Sub-menu (Collapsible) */}
                     <button
-                        className="nav-item nav-item-parent"
-                        onClick={() => setAnalyticsOpen(!analyticsOpen)}
+                        className={`nav-item ${location.pathname === '/admin/tracks' ? 'active' : ''}`}
+                        onClick={() => handleNavigation('/admin/tracks')}
                     >
-                        <BarChart2 size={18} className="nav-icon" />
-                        <span className="nav-label">{t('nav.analytics', 'Analytics')}</span>
-                        {analyticsOpen ? <ChevronDown size={16} className="chevron" /> : <ChevronRight size={16} className="chevron" />}
+                        <Settings size={18} className="nav-icon" />
+                        <span className="nav-label">{t('nav.adminTracks', 'Catalog Admin')}</span>
                     </button>
-
-                    {/* Analytics Sub-items */}
-                    {analyticsOpen && (
-                        <div className="nav-sub-items">
-                            <button
-                                className={`nav-item nav-sub-item ${isActive('/analytics/dashboards') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/analytics/dashboards')}
-                            >
-                                <BarChart3 size={16} className="nav-icon" />
-                                <span className="nav-label">{t('nav.dashboards', 'Dashboards')}</span>
-                            </button>
-                            <button
-                                className={`nav-item nav-sub-item ${isActive('/report-bot') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/report-bot')}
-                            >
-                                <Bot size={16} className="nav-icon" />
-                                <span className="nav-label">{t('nav.reportBot', 'Report Bot')}</span>
-                            </button>
-                            <button
-                                className={`nav-item nav-sub-item ${isActive('/reports') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/reports')}
-                            >
-                                <FileText size={16} className="nav-icon" />
-                                <span className="nav-label">{t('nav.reportsExplorer', 'Reports Explorer')}</span>
-                            </button>
-                        </div>
-                    )}
                 </div>
             </nav>
 

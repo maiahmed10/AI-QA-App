@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-import { User, Lock, ArrowRight } from 'lucide-react';
+import { Brain, Lock, User, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 const LoginScreen = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('student@micromind.com');
+    const [password, setPassword] = useState('student123');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -17,18 +17,18 @@ const LoginScreen = () => {
 
         try {
             await authService.login(username, password);
-            const user = authService.getCurrentUser();
-
-            if (user.role === 'MANAGER') {
-                navigate('/');
-            } else {
-                navigate('/collector/tasks');
-            }
-        } catch {
-            setError('Invalid credentials. Please try again.');
+            navigate('/');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleQuickFill = (email, pass) => {
+        setUsername(email);
+        setPassword(pass);
+        setError('');
     };
 
     return (
@@ -37,71 +37,67 @@ const LoginScreen = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'var(--bg-page)',
+            backgroundColor: 'var(--bg-page, #0F0F0F)',
             padding: '2rem'
         }}>
             {/* Login Card */}
             <div style={{
                 width: '100%',
-                maxWidth: '440px',
-                backgroundColor: 'var(--bg-surface)',
-                borderRadius: '12px',
-                border: '1px solid var(--border)',
+                maxWidth: '460px',
+                backgroundColor: 'var(--bg-surface, #1C1C1C)',
+                borderRadius: '16px',
+                border: '1px solid var(--border, #333333)',
                 overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6)'
             }}>
                 {/* Header */}
                 <div style={{
                     padding: '2.5rem 2rem 2rem 2rem',
                     textAlign: 'center',
-                    borderBottom: '1px solid var(--border)'
+                    borderBottom: '1px solid var(--border, #333333)'
                 }}>
-                    {/* Logo */}
+                    {/* ShadowMate Logo */}
                     <div style={{
                         width: '64px',
                         height: '64px',
-                        margin: '0 auto 1.5rem auto',
+                        margin: '0 auto 1.25rem auto',
                         background: 'linear-gradient(135deg, #E0AA3E 0%, #F5C451 100%)',
-                        borderRadius: '12px',
+                        borderRadius: '16px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '28px',
-                        fontWeight: '700',
-                        color: '#000000',
-                        letterSpacing: '1px'
+                        boxShadow: '0 8px 16px rgba(224, 170, 62, 0.25)'
                     }}>
-                        YCC
+                        <Brain size={34} style={{ color: '#000000' }} />
                     </div>
 
-                    {/* Title */}
+                    {/* Title & Subtitle */}
                     <h1 style={{
-                        margin: '0 0 0.5rem 0',
-                        fontSize: '1.75rem',
+                        margin: '0 0 0.4rem 0',
+                        fontSize: '1.85rem',
                         fontWeight: '700',
-                        color: 'var(--text-primary)'
+                        color: 'var(--text-primary, #F2F3EC)',
+                        fontFamily: 'var(--heading-font)'
                     }}>
-                        Yasra
+                        ShadowMate
                     </h1>
                     <p style={{
                         margin: 0,
-                        fontSize: '13px',
+                        fontSize: '12px',
                         fontWeight: '600',
                         color: '#E0AA3E',
                         textTransform: 'uppercase',
-                        letterSpacing: '1px'
+                        letterSpacing: '1.5px'
                     }}>
-                        Credit Control
+                        Adaptive EdTech Platform
                     </p>
                 </div>
 
                 {/* Form Section */}
-                <div style={{
-                    padding: '2rem'
-                }}>
+                <div style={{ padding: '2rem' }}>
                     <h2 style={{
-                        margin: '0 0 1.5rem 0',
-                        fontSize: '1.25rem',
+                        margin: '0 0 1.25rem 0',
+                        fontSize: '1.2rem',
                         fontWeight: '600',
                         color: 'var(--text-primary)'
                     }}>
@@ -109,16 +105,16 @@ const LoginScreen = () => {
                     </h2>
 
                     <form onSubmit={handleLogin}>
-                        {/* Username Field */}
+                        {/* Email / Username Field */}
                         <div style={{ marginBottom: '1.25rem' }}>
                             <label style={{
                                 display: 'block',
                                 marginBottom: '0.5rem',
-                                fontSize: '0.875rem',
+                                fontSize: '0.85rem',
                                 fontWeight: '600',
-                                color: 'var(--text-muted)'
+                                color: 'var(--text-muted, #888888)'
                             }}>
-                                Username
+                                Email / Username
                             </label>
                             <div style={{ position: 'relative' }}>
                                 <User
@@ -136,21 +132,18 @@ const LoginScreen = () => {
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Enter your username"
+                                    placeholder="e.g. student@micromind.com"
                                     style={{
                                         width: '100%',
                                         padding: '12px 14px 12px 44px',
                                         borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        backgroundColor: 'var(--bg-input)',
-                                        color: 'var(--text-primary)',
+                                        border: '1px solid var(--border, #333333)',
+                                        backgroundColor: 'var(--bg-input, #0F0F0F)',
+                                        color: 'var(--text-primary, #F2F3EC)',
                                         fontSize: '0.95rem',
                                         outline: 'none',
-                                        boxSizing: 'border-box',
-                                        transition: 'border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)'
+                                        boxSizing: 'border-box'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#E0AA3E'}
-                                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                                     required
                                 />
                             </div>
@@ -161,9 +154,9 @@ const LoginScreen = () => {
                             <label style={{
                                 display: 'block',
                                 marginBottom: '0.5rem',
-                                fontSize: '0.875rem',
+                                fontSize: '0.85rem',
                                 fontWeight: '600',
-                                color: 'var(--text-muted)'
+                                color: 'var(--text-muted, #888888)'
                             }}>
                                 Password
                             </label>
@@ -183,59 +176,33 @@ const LoginScreen = () => {
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter your password"
+                                    placeholder="Enter password"
                                     style={{
                                         width: '100%',
                                         padding: '12px 14px 12px 44px',
                                         borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        backgroundColor: 'var(--bg-input)',
-                                        color: 'var(--text-primary)',
+                                        border: '1px solid var(--border, #333333)',
+                                        backgroundColor: 'var(--bg-input, #0F0F0F)',
+                                        color: 'var(--text-primary, #F2F3EC)',
                                         fontSize: '0.95rem',
                                         outline: 'none',
-                                        boxSizing: 'border-box',
-                                        transition: 'border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)'
+                                        boxSizing: 'border-box'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = '#E0AA3E'}
-                                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
                                     required
                                 />
                             </div>
                         </div>
 
-                        {/* Forgot Password Link */}
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            marginBottom: '1.5rem'
-                        }}>
-                            <a
-                                href="#"
-                                style={{
-                                    color: '#E0AA3E',
-                                    fontSize: '0.85rem',
-                                    textDecoration: 'none',
-                                    fontWeight: '500',
-                                    transition: 'color 150ms'
-                                }}
-                                onMouseEnter={(e) => e.target.style.color = '#F5C451'}
-                                onMouseLeave={(e) => e.target.style.color = '#E0AA3E'}
-                            >
-                                Forgot username or password?
-                            </a>
-                        </div>
-
                         {/* Error Message */}
                         {error && (
                             <div style={{
-                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                                border: '1px solid rgba(220, 38, 38, 0.3)',
+                                backgroundColor: 'rgba(220, 38, 38, 0.15)',
+                                border: '1px solid rgba(220, 38, 38, 0.4)',
                                 color: '#fca5a5',
-                                padding: '12px 14px',
+                                padding: '10px 14px',
                                 borderRadius: '8px',
-                                marginBottom: '1.5rem',
-                                fontSize: '0.9rem',
-                                fontWeight: '500'
+                                marginBottom: '1.25rem',
+                                fontSize: '0.85rem'
                             }}>
                                 {error}
                             </div>
@@ -259,47 +226,87 @@ const LoginScreen = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '8px',
-                                transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-                                opacity: loading ? 0.7 : 1
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!loading) e.target.style.backgroundColor = '#F5C451';
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!loading) e.target.style.backgroundColor = '#E0AA3E';
+                                transition: 'all 150ms ease'
                             }}
                         >
                             {loading ? (
-                                <>
-                                    <div className="spinner" style={{
-                                        width: '16px',
-                                        height: '16px',
-                                        border: '2px solid rgba(0, 0, 0, 0.3)',
-                                        borderTopColor: '#000000',
-                                        borderRadius: '50%'
-                                    }}></div>
-                                    Logging in...
-                                </>
+                                <span>Logging in...</span>
                             ) : (
                                 <>
-                                    Log In
-                                    <ArrowRight size={20} />
+                                    Log In to ShadowMate
+                                    <ArrowRight size={18} />
                                 </>
                             )}
                         </button>
                     </form>
+
+                    {/* Seeded Demo Credentials Helper Box */}
+                    <div style={{
+                        marginTop: '1.5rem',
+                        padding: '1rem',
+                        borderRadius: '10px',
+                        background: 'rgba(224, 170, 62, 0.08)',
+                        border: '1px solid rgba(224, 170, 62, 0.2)'
+                    }}>
+                        <div style={{ fontSize: '12px', fontWeight: '600', color: '#E0AA3E', marginBottom: '8px' }}>
+                            💡 Demo Credentials (Click to auto-fill):
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', flexDirection: 'column' }}>
+                            <button
+                                type="button"
+                                onClick={() => handleQuickFill('student@micromind.com', 'student123')}
+                                style={{
+                                    textAlign: 'left',
+                                    background: 'var(--bg-surface)',
+                                    border: '1px solid var(--border)',
+                                    padding: '8px 10px',
+                                    borderRadius: '6px',
+                                    color: 'var(--text-primary)',
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <span>🎓 <strong>Student:</strong> student@micromind.com / student123</span>
+                                <span style={{ fontSize: '11px', color: '#E0AA3E' }}>Fill</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => handleQuickFill('admin@micromind.com', 'admin123')}
+                                style={{
+                                    textAlign: 'left',
+                                    background: 'var(--bg-surface)',
+                                    border: '1px solid var(--border)',
+                                    padding: '8px 10px',
+                                    borderRadius: '6px',
+                                    color: 'var(--text-primary)',
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <span>⚙️ <strong>Admin:</strong> admin@micromind.com / admin123</span>
+                                <span style={{ fontSize: '11px', color: '#E0AA3E' }}>Fill</span>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
 
                 {/* Footer */}
                 <div style={{
-                    padding: '1.5rem 2rem',
+                    padding: '1rem 2rem',
                     textAlign: 'center',
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     color: 'var(--text-muted)',
                     borderTop: '1px solid var(--border)'
                 }}>
-                    <p style={{ margin: '0 0 0.25rem 0' }}>Version 1.0.0</p>
-                    <p style={{ margin: 0 }}>Contact IT Support for access issues.</p>
+                    ShadowMate Adaptive EdTech Engine v2.0.0
                 </div>
             </div>
         </div>

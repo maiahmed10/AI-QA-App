@@ -56,28 +56,21 @@
   --shadow-lg: none;
 }
 
-/* Light Mode Theme */
-[data-theme="light"] {
+/* Light Mode Theme - High Contrast Slate & Executive Gold */
+[data-theme="light"],
+html[data-theme="light"],
+body.light-mode {
   /* Core Colors - Light Mode */
-  --bg-page: #FFFFFF;
-  /* Pure White */
-  --bg-surface: #FFFFFF;
-  /* White */
+  --bg-page: #F8FAFC;       /* Slate 50 background */
+  --bg-surface: #FFFFFF;    /* Clean white surface */
   --bg-card: #FFFFFF;
-  /* Card background */
-  --bg-input: #F9FAFB;
-  /* Light Grey Input */
-  --bg-hover: #F3F4F6;
-  /* Light Hover */
+  --bg-input: #F1F5F9;      /* Slate 100 inputs */
+  --bg-hover: #E2E8F0;      /* Slate 200 hover */
 
-  --primary: #E0AA3E;
-  /* Darker Gold for better contrast */
-  --text-main: #000000;
-  /* Pure Black */
-  --text-muted: #6B7280;
-  /* Grey 500 */
-  --border: #E5E5E5;
-  /* Light Grey Border */
+  --primary: #B8860B;       /* Executive Gold */
+  --text-main: #0F172A;     /* Slate 900 High Contrast Text */
+  --text-muted: #475569;    /* Slate 600 Visible Secondary Text */
+  --border: #CBD5E1;        /* Slate 300 Visible Borders */
 
   /* Legacy Map - Light Mode */
   --primary-color: var(--primary);
@@ -89,15 +82,11 @@
   --border-color: var(--border);
 
   --accent-color: #0D9488;
-  /* Teal 600 */
   --danger-color: #DC2626;
-  /* Red 600 */
   --warning-color: #D97706;
-  /* Amber 600 */
   --success-color: #16A34A;
-  /* Green 600 */
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
@@ -358,6 +347,182 @@ option:checked {
   background-color: rgba(0, 0, 0, 0.6);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
-  /* Premium touch */
   z-index: 40;
 }
+
+/* ==========================================================================
+   Comprehensive Light Mode High-Contrast Overrides (Dynamic Theme Engine)
+   ========================================================================== */
+
+html[data-theme="light"],
+body.light-mode {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+/* 1. Cards, Sections & Main Containers */
+html[data-theme="light"] .qa-card,
+html[data-theme="light"] .mm-card,
+html[data-theme="light"] .qa-workspace-header,
+html[data-theme="light"] .qa-input-card,
+html[data-theme="light"] .qa-login-card {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* 2. Headings & Primary Titles */
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] h4,
+html[data-theme="light"] .mm-qa-header-title,
+html[data-theme="light"] .qa-title,
+html[data-theme="light"] .qa-card-title,
+html[data-theme="light"] .mm-card-title,
+html[data-theme="light"] .qa-brand-title,
+html[data-theme="light"] .qa-metric-title {
+  color: #0F172A !important;
+}
+
+/* 3. Body Text, Labels & Descriptive Text */
+html[data-theme="light"] p,
+html[data-theme="light"] span:not(.qa-badge):not(.badge-pass):not(.badge-fail):not(.badge-warn),
+html[data-theme="light"] label,
+html[data-theme="light"] .qa-field-label,
+html[data-theme="light"] .mm-label,
+html[data-theme="light"] .qa-login-subtitle,
+html[data-theme="light"] .text-muted-fg {
+  color: #334155 !important;
+}
+
+html[data-theme="light"] .text-muted,
+html[data-theme="light"] .qa-input-stats {
+  color: #64748B !important;
+}
+
+/* 4. Form Inputs, Textareas & Select Dropdowns */
+html[data-theme="light"] input:not([type="checkbox"]),
+html[data-theme="light"] textarea,
+html[data-theme="light"] select,
+html[data-theme="light"] .qa-input,
+html[data-theme="light"] .qa-textarea,
+html[data-theme="light"] .mm-search-input,
+html[data-theme="light"] .mm-filter-select,
+html[data-theme="light"] .mm-select,
+html[data-theme="light"] .qa-select-sm,
+html[data-theme="light"] .qa-form-input {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+html[data-theme="light"] input:focus,
+html[data-theme="light"] textarea:focus,
+html[data-theme="light"] select:focus {
+  border-color: #B8860B !important;
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2) !important;
+}
+
+/* 5. Tables, Headers & Dividers */
+html[data-theme="light"] table,
+html[data-theme="light"] .qa-table,
+html[data-theme="light"] .mm-table {
+  border-color: #E2E8F0 !important;
+}
+
+html[data-theme="light"] th,
+html[data-theme="light"] .qa-table th,
+html[data-theme="light"] .mm-table th {
+  background-color: #F1F5F9 !important;
+  color: #334155 !important;
+  border-bottom: 2px solid #CBD5E1 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="light"] td,
+html[data-theme="light"] .qa-table td,
+html[data-theme="light"] .mm-table td {
+  border-bottom-color: #E2E8F0 !important;
+  color: #1E293B !important;
+}
+
+html[data-theme="light"] tr.mm-tr:hover,
+html[data-theme="light"] .qa-table tr:hover {
+  background-color: #F8FAFC !important;
+}
+
+html[data-theme="light"] tr.tr-fail {
+  background-color: #FEF2F2 !important;
+}
+
+/* 6. High-Contrast Status Badges */
+html[data-theme="light"] .badge-pass,
+html[data-theme="light"] .qa-badge.badge-pass {
+  background-color: #DCFCE7 !important;
+  border-color: #86EFAC !important;
+  color: #166534 !important;
+}
+
+html[data-theme="light"] .badge-fail,
+html[data-theme="light"] .qa-badge.badge-fail {
+  background-color: #FEE2E2 !important;
+  border-color: #FCA5A5 !important;
+  color: #991B1B !important;
+}
+
+html[data-theme="light"] .badge-warn,
+html[data-theme="light"] .qa-badge.badge-warn {
+  background-color: #FEF3C7 !important;
+  border-color: #FDE68A !important;
+  color: #92400E !important;
+}
+
+/* 7. Inner Metrics, Tag Containers & Code Output */
+html[data-theme="light"] .mm-metric-card,
+html[data-theme="light"] .qa-tag-item,
+html[data-theme="light"] .qa-mode-tabs {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+html[data-theme="light"] .mm-metric-value,
+html[data-theme="light"] .qa-tag-value {
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] pre,
+html[data-theme="light"] code,
+html[data-theme="light"] .mm-json-output,
+html[data-theme="light"] .mm-response-box,
+html[data-theme="light"] .qa-blocked-text {
+  background-color: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+}
+
+/* 8. Mode Selector Tabs & Upload Buttons */
+html[data-theme="light"] .qa-mode-btn:not(.active) {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .qa-mode-btn:not(.active):hover {
+  background-color: #E2E8F0 !important;
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] .qa-mode-btn.active {
+  background: linear-gradient(135deg, #B8860B, #996515) !important;
+  color: #FFFFFF !important;
+}
+
+html[data-theme="light"] .qa-upload-button {
+  background-color: #FEF3C7 !important;
+  border-color: #FDE68A !important;
+  color: #92400E !important;
+}

@@ -1,11 +1,29 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import ProtectedRoute from './components/ProtectedRoute';
-import ManagerLayout from './components/ManagerLayout';
-import LoginScreen from './pages/LoginScreen';
+import { QAAuthProvider } from './context/QAAuthContext';
+import QALayout from './components/QALayout';
+import QAProtectedRoute from './components/QAProtectedRoute';
+import QALoginPage from './pages/QALoginPage';
 
-// Lazy load pages for better performance
-const HomePage = lazy(() => import('./pages/HomePage'));
+// Multi-Page Application Views
+const QATestingAssistantPage = lazy(() => import('./pages/QATestingAssistantPage'));
+const AIQATestingPage = lazy(() => import('./pages/AIQATestingPage'));
+const AIQAChatbotPage = lazy(() => import('./pages/AIQAChatbotPage'));
+const QATestCasesPage = lazy(() => import('./pages/QATestCasesPage'));
+const QATestResultsPage = lazy(() => import('./pages/QATestResultsPage'));
+const QATestingHistoryPage = lazy(() => import('./pages/QATestingHistoryPage'));
+const QASettingsPage = lazy(() => import('./pages/QASettingsPage'));
+
+// Preserved Legacy Pages
+const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'));
+const ManagerLayout = lazy(() => import('./components/ManagerLayout'));
+const StudentDashboardPage = lazy(() => import('./pages/StudentDashboardPage'));
+const StudyPlannerPage = lazy(() => import('./pages/StudyPlannerPage'));
+const AssignmentsPage = lazy(() => import('./pages/AssignmentsPage'));
+const TrackRecommendationPage = lazy(() => import('./pages/TrackRecommendationPage'));
+const StudentProfileMemoryPage = lazy(() => import('./pages/StudentProfileMemoryPage'));
+const AdminTracksPage = lazy(() => import('./pages/AdminTracksPage'));
+
 const CoPilotsPage = lazy(() => import('./pages/CoPilotsPage'));
 const DocumentsLibrary = lazy(() => import('./pages/DocumentsLibrary'));
 const DashboardsPage = lazy(() => import('./pages/DashboardsPage'));
@@ -16,7 +34,7 @@ const CampusPage = lazy(() => import('./pages/CampusPage'));
 const DocsPage = lazy(() => import('./pages/DocsPage'));
 const DocsViewer = lazy(() => import('./pages/DocsViewer'));
 
-// Branded loading fallback with MicroMind logo + golden spinner
+// Branded Loading Fallback
 const LoadingFallback = () => (
     <div style={{
         minHeight: '100vh',
@@ -27,14 +45,12 @@ const LoadingFallback = () => (
         color: 'var(--text-primary, #F2F3EC)',
     }}>
         <div style={{ textAlign: 'center' }}>
-            {/* Spinner ring + pulsing logo */}
             <div style={{
                 position: 'relative',
                 width: '80px',
                 height: '80px',
                 margin: '0 auto 24px',
             }}>
-                {/* Spinning ring */}
                 <div style={{
                     position: 'absolute',
                     inset: 0,
@@ -43,23 +59,7 @@ const LoadingFallback = () => (
                     borderTopColor: '#E0AA3E',
                     animation: 'mm-spin 1s linear infinite',
                 }} />
-                {/* Logo in center */}
-                <img
-                    src="/assets/logo.png"
-                    alt="MicroMind"
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '40px',
-                        height: '40px',
-                        objectFit: 'contain',
-                        animation: 'mm-pulse 2s ease-in-out infinite',
-                    }}
-                />
             </div>
-            {/* Brand text */}
             <div style={{
                 fontSize: '1.1rem',
                 fontWeight: 700,
@@ -67,22 +67,16 @@ const LoadingFallback = () => (
                 textTransform: 'uppercase',
                 color: '#E0AA3E',
                 marginBottom: '6px',
-            }}>MicroMind</div>
+            }}>MicroMind QA Suite</div>
             <div style={{
-                fontSize: '0.7rem',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#555',
-            }}>Business Suite</div>
+                fontSize: '0.75rem',
+                letterSpacing: '0.1em',
+                color: '#888',
+            }}>Loading Professional App...</div>
         </div>
-        {/* Keyframe animations injected via style tag */}
         <style>{`
             @keyframes mm-spin {
                 to { transform: rotate(360deg); }
-            }
-            @keyframes mm-pulse {
-                0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-                50% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.92); }
             }
         `}</style>
     </div>
@@ -90,31 +84,67 @@ const LoadingFallback = () => (
 
 function App() {
     return (
-        <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<LoginScreen />} />
+        <QAAuthProvider>
+            <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                    {/* Page 1: Login Route */}
+                    <Route path="/login" element={<QALoginPage />} />
 
-                {/* Protected Routes */}
-                <Route element={<ProtectedRoute />}>
-                    <Route element={<ManagerLayout />}>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/copilots" element={<CoPilotsPage />} />
-                        <Route path="/documents" element={<DocumentsLibrary />} />
-                        <Route path="/analytics/dashboards" element={<DashboardsPage />} />
-                        <Route path="/report-bot" element={<ReportBotPage />} />
-                        <Route path="/reports" element={<ReportsPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/campus" element={<CampusPage />} />
-                        <Route path="/docs" element={<DocsPage />} />
-                        <Route path="/docs/:slug" element={<DocsViewer />} />
+                    {/* Protected Application Routes (Pages 2-6) */}
+                    <Route element={<QAProtectedRoute />}>
+                        <Route element={<QALayout />}>
+                            {/* Page 2: Dashboard */}
+                            <Route path="/" element={<QATestingAssistantPage />} />
+                            <Route path="/dashboard" element={<QATestingAssistantPage />} />
+                            <Route path="/qa" element={<QATestingAssistantPage />} />
+
+                            {/* Page 3: AI QA Testing Workspace */}
+                            <Route path="/ai-qa-testing" element={<AIQATestingPage />} />
+                            <Route path="/qa-workspace" element={<AIQATestingPage />} />
+
+                            {/* Dedicated AI QA Assistant Chatbot */}
+                            <Route path="/ai-assistant" element={<AIQAChatbotPage />} />
+                            <Route path="/chat" element={<AIQAChatbotPage />} />
+
+                            {/* Page 4: Test Cases Management */}
+                            <Route path="/test-cases" element={<QATestCasesPage />} />
+
+                            {/* Page 5: Test Results / History */}
+                            <Route path="/test-results" element={<QATestResultsPage />} />
+                            <Route path="/history" element={<QATestResultsPage />} />
+                            <Route path="/testing-history" element={<QATestingHistoryPage />} />
+
+                            {/* Page 6: Settings */}
+                            <Route path="/settings" element={<QASettingsPage />} />
+                        </Route>
                     </Route>
-                </Route>
 
-                {/* Fallback redirect */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </Suspense>
+                    {/* Preserved Legacy ShadowMate Routes */}
+                    <Route path="/shadowmate" element={<ProtectedRoute />}>
+                        <Route element={<ManagerLayout />}>
+                            <Route path="dashboard" element={<StudentDashboardPage />} />
+                            <Route path="planner" element={<StudyPlannerPage />} />
+                            <Route path="assignments" element={<AssignmentsPage />} />
+                            <Route path="recommendations" element={<TrackRecommendationPage />} />
+                            <Route path="memory" element={<StudentProfileMemoryPage />} />
+                            <Route path="admin/tracks" element={<AdminTracksPage />} />
+                            <Route path="copilots" element={<CoPilotsPage />} />
+                            <Route path="documents" element={<DocumentsLibrary />} />
+                            <Route path="analytics/dashboards" element={<DashboardsPage />} />
+                            <Route path="report-bot" element={<ReportBotPage />} />
+                            <Route path="reports" element={<ReportsPage />} />
+                            <Route path="settings" element={<SettingsPage />} />
+                            <Route path="campus" element={<CampusPage />} />
+                            <Route path="docs" element={<DocsPage />} />
+                            <Route path="docs/:slug" element={<DocsViewer />} />
+                        </Route>
+                    </Route>
+
+                    {/* Fallback redirect */}
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+            </Suspense>
+        </QAAuthProvider>
     );
 }
 

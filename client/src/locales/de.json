@@ -15,7 +15,12 @@
         "projects": "Projekte",
         "tasks": "Aufgaben",
         "team": "Team",
-        "customers": "Kunden"
+        "customers": "Kunden",
+        "planner": "Adaptiver Planer",
+        "assignments": "Aufgaben",
+        "recommendations": "Studiengang-Empfehlungen",
+        "memory": "Speicherprofil",
+        "adminTracks": "Katalogverwaltung"
     },
     "copilots": {
         "title": "Co-Piloten",
@@ -62,6 +67,7 @@
         "progress": "Fortschritt",
         "kanban": "Board",
         "list": "Liste",
+        "analytics": "Analytik",
         "notFound": "Projekt nicht gefunden",
         "status": {
             "active": "Aktiv",

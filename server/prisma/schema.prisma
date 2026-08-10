@@ -273,3 +273,215 @@ enum DocumentType {
   DOCUMENT
   OTHER
 }
+
+// ============================================================================
+// SHADOWMATE ADAPTIVE EDTECH MODELS
+// ============================================================================
+
+model StudentLearningProfile {
+  id                        String   @id @default(uuid())
+  userId                    String   @unique
+  organizationId            String
+  
+  // Learning Pace & Habits
+  avgActualVsEstRatio       Float    @default(1.0)
+  preferredStudyHours       Json?    // e.g. {"morning": 20, "afternoon": 30, "evening": 50}
+  preferredSessionDuration  Int      @default(45) // in minutes
+  dailyStudyCapacityMinutes Int      @default(180)
+  
+  // Adaptive Metrics & Memory
+  subjectPace               Json?    // e.g. {"cs101": 0.8, "math201": 1.25}
+  subjectStrengths          String[] @default([])
+  subjectWeaknesses         String[] @default([])
+  skills                    String[] @default([])
+  interests                 String[] @default([])
+  focusPattern              Json?    // e.g. {"peakFocusHour": 16, "avgFocusScore": 4.2}
+  delayPattern              Json?    // e.g. {"procrastinationIndex": 0.15, "missedSessionsCount": 2}
+  
+  // Transparency & Manual Overrides
+  manualOverrides           Json?    // Student manual adjustments to AI inferences
+  dataConfidenceScore       Float    @default(0.1) // 0.0 to 1.0 confidence indicator
+  
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([userId])
+  @@index([organizationId])
+  @@map("student_learning_profiles")
+}
+
+model AcademicTrack {
+  id             String   @id @default(uuid())
+  organizationId String
+  trackName      String
+  code           String   @unique
+  description    String   @db.Text
+  icon           String?  @default("GraduationCap")
+  requiredSkills String[] @default([])
+  careerOutcomes String[] @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  courses        Course[]
+  recommendations TrackRecommendation[]
+
+  @@index([organizationId])
+  @@index([code])
+  @@map("academic_tracks")
+}
+
+model Course {
+  id             String        @id @default(uuid())
+  organizationId String
+  trackId        String?
+  code           String        @unique
+  title          String
+  description    String?       @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  track          AcademicTrack? @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  assignments    Assignment[]
+
+  @@index([organizationId])
+  @@index([trackId])
+  @@map("courses")
+}
+
+model Assignment {
+  id                String             @id @default(uuid())
+  organizationId    String
+  userId            String
+  courseId          String?
+  title             String
+  description       String?            @db.Text
+  dueDate           DateTime
+  priority          AssignmentPriority @default(MEDIUM)
+  status            AssignmentStatus   @default(PENDING)
+  estimatedMinutes  Int                @default(60)
+  actualMinutesSpent Int               @default(0)
+  difficultyRating  Int?               @default(3) // 1 to 5
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  course            Course?            @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  sessions          StudySession[]
+  feedbacks         StudentFeedback[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
+  @@map("assignments")
+}
+
+model StudySession {
+  id               String      @id @default(uuid())
+  organizationId   String
+  userId           String
+  assignmentId     String?
+  courseCode       String?
+  title            String
+  startTime        DateTime
+  endTime          DateTime?
+  plannedDuration  Int         // minutes
+  actualDuration   Int         @default(0) // minutes
+  focusScore       Int         @default(3) // 1 to 5
+  completed        Boolean     @default(false)
+  notes            String?     @db.Text
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  assignment       Assignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  feedbacks        StudentFeedback[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([assignmentId])
+  @@map("study_sessions")
+}
+
+model StudentFeedback {
+  id               String       @id @default(uuid())
+  organizationId   String
+  userId           String
+  assignmentId     String?
+  sessionId        String?
+  feedbackType     FeedbackType @default(TASK_DIFFICULTY)
+  rating           Int          @default(3) // 1 to 5
+  comment          String?      @db.Text
+  appliedToProfile Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+
+  assignment       Assignment?   @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  session          StudySession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("student_feedbacks")
+}
+
+model TrackRecommendation {
+  id                  String          @id @default(uuid())
+  organizationId      String
+  userId              String
+  trackId             String
+  fitPercentage       Int             // e.g. 89%
+  deterministicScores Json?           // { skillsMatch: 90, paceScore: 85, masteryScore: 88 }
+  reasoning           Json?           // Array of explanation bullet points
+  confidenceLevel     ConfidenceLevel @default(INSUFFICIENT_DATA)
+  createdAt           DateTime        @default(now())
+
+  track               AcademicTrack   @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([trackId])
+  @@map("track_recommendations")
+}
+
+model AIStudyPlan {
+  id               String   @id @default(uuid())
+  organizationId   String
+  userId           String
+  weekStartDate    DateTime
+  scheduleBreakdown Json    // Array of daily study slots
+  status           String   @default("ACTIVE") // ACTIVE, SUPERSEDED_BY_REPLAN
+  version          Int      @default(1)
+  replanReason     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("ai_study_plans")
+}
+
+enum AssignmentPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum AssignmentStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum FeedbackType {
+  TASK_DIFFICULTY
+  TIME_ESTIMATE
+  SCHEDULE_REALISM
+  SESSION_LENGTH
+}
+
+enum ConfidenceLevel {
+  INSUFFICIENT_DATA
+  LOW
+  MEDIUM
+  HIGH
+}
+

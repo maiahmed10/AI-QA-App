@@ -15,7 +15,12 @@
         "projects": "Miradi",
         "tasks": "Kazi",
         "team": "Timu",
-        "customers": "Wateja"
+        "customers": "Wateja",
+        "planner": "Mratibu wa Adapta",
+        "assignments": "Kazi za Masomo",
+        "recommendations": "Mapendekezo ya Kozi",
+        "memory": "Kumbukumbu ya Mwanafunzi",
+        "adminTracks": "Usimamizi wa Kozi"
     },
     "copilots": {
         "title": "Wasaidizi",
@@ -62,7 +67,8 @@
         "progress": "Maendeleo",
         "kanban": "Bodi",
         "list": "Orodha",
-        "notFound": "Mradi haujapatikana",
+        "analytics": "Uchanganuzi",
+        "notFound": "Mradi haukupatikana",
         "status": {
             "active": "Hai",
             "onHold": "Imesimamishwa",

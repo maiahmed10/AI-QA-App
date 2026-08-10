@@ -15,7 +15,12 @@
         "projects": "المشاريع",
         "tasks": "المهام",
         "team": "الفريق",
-        "customers": "العملاء"
+        "customers": "العملاء",
+        "planner": "المخطط التكيفي",
+        "assignments": "المهام والواجبات",
+        "recommendations": "محرك التوصيات الأكاديمية",
+        "memory": "ملف الذاكرة التكيفية",
+        "adminTracks": "إدارة المسارات الأكاديمية"
     },
     "copilots": {
         "title": "المساعدون",
@@ -62,6 +67,7 @@
         "progress": "التقدم",
         "kanban": "اللوحة",
         "list": "قائمة",
+        "analytics": "التحليلات",
         "notFound": "المشروع غير موجود",
         "status": {
             "active": "نشط",

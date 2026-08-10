@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ type: '*/*' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
@@ -31,24 +31,33 @@ app.get('/api/health', (req, res) => {
 // API Routes
 const authRoutes = require('./routes/auth');
 const managerRoutes = require('./routes/manager');
+const studentRoutes = require('./routes/student');
+const shadowmateAiRoutes = require('./routes/shadowmateAi');
+const adminEdtechRoutes = require('./routes/adminEdtech');
+const dashboardRoutes = require('./routes/dashboards');
+const aiRoutes = require('./routes/ai');
+const messagesRoutes = require('./routes/messages');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/manager', managerRoutes);
-const dashboardRoutes = require('./routes/dashboards');
+app.use('/api/student', studentRoutes);
+app.use('/api/v1/ai/shadowmate', shadowmateAiRoutes);
+app.use('/api/admin/edtech', adminEdtechRoutes);
 app.use('/api/dashboards', dashboardRoutes);
-const aiRoutes = require('./routes/ai');
 app.use('/api/v1/ai', aiRoutes);
+app.use('/api/messages', messagesRoutes);
 
 // Placeholder routes
 app.get('/api', (req, res) => {
     res.json({
-        message: 'MicroMind Base Template API',
-        version: '1.0.0',
+        message: 'ShadowMate Adaptive EdTech Platform API',
+        version: '2.0.0',
         endpoints: {
             health: '/api/health',
             auth: '/api/auth/*',
-            dashboards: '/api/dashboards/*',
-            reports: '/api/reports/*',
-            documents: '/api/documents/*'
+            student: '/api/student/*',
+            shadowmateAi: '/api/v1/ai/shadowmate/*',
+            adminEdtech: '/api/admin/edtech/*'
         }
     });
 });

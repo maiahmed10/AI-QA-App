@@ -166,41 +166,104 @@ const AIAgentChat = () => {
         return () => document.removeEventListener('click', handleClickOutside);
     }, [menuOpenForSession]);
 
-    const loadSessions = async () => {
-        // Sessions are now managed locally, no need to load from backend
-        // You can add localStorage persistence here if needed
+    const loadSessions = () => {
+        try {
+            const savedSessionsStr = localStorage.getItem('shadowmate_copilot_sessions');
+            const savedMsgsStr = localStorage.getItem('shadowmate_copilot_messages');
+            if (savedSessionsStr) {
+                const parsedSessions = JSON.parse(savedSessionsStr);
+                if (Array.isArray(parsedSessions) && parsedSessions.length > 0) {
+                    // Deduplicate loaded sessions by unique ID
+                    const uniqueMap = new Map();
+                    parsedSessions.forEach(s => {
+                        if (s && s.id && !uniqueMap.has(s.id)) {
+                            uniqueMap.set(s.id, s);
+                        }
+                    });
+                    const uniqueSessions = Array.from(uniqueMap.values());
+                    setSessions(uniqueSessions);
+
+                    const activeId = uniqueSessions[0].id;
+                    setCurrentSessionId(activeId);
+
+                    if (savedMsgsStr) {
+                        const parsedMsgs = JSON.parse(savedMsgsStr);
+                        if (parsedMsgs && parsedMsgs[activeId] && parsedMsgs[activeId].length > 0) {
+                            setMessages(parsedMsgs[activeId]);
+                        }
+                    }
+                    return; // Clean exit when sessions are successfully loaded
+                }
+            }
+        } catch (e) {
+            console.error('Error restoring Copilot chat history:', e);
+        }
+        handleNewChat();
     };
+
+    // Save active chat messages to localStorage on change
+    useEffect(() => {
+        if (currentSessionId && messages.length > 0) {
+            try {
+                const savedMsgsStr = localStorage.getItem('shadowmate_copilot_messages') || '{}';
+                const msgsObj = JSON.parse(savedMsgsStr);
+                msgsObj[currentSessionId] = messages;
+                localStorage.setItem('shadowmate_copilot_messages', JSON.stringify(msgsObj));
+            } catch (e) {
+                console.error('Error saving chat messages:', e);
+            }
+        }
+    }, [messages, currentSessionId]);
+
+    // Save active sessions list to localStorage on change
+    useEffect(() => {
+        if (sessions.length > 0) {
+            try {
+                // Deduplicate before saving to localStorage
+                const uniqueMap = new Map();
+                sessions.forEach(s => {
+                    if (s && s.id && !uniqueMap.has(s.id)) {
+                        uniqueMap.set(s.id, s);
+                    }
+                });
+                localStorage.setItem('shadowmate_copilot_sessions', JSON.stringify(Array.from(uniqueMap.values())));
+            } catch (e) {
+                console.error('Error saving chat sessions:', e);
+            }
+        }
+    }, [sessions]);
 
     const handleNewChat = async (initialMessage = null) => {
         try {
-            // Create a local session without backend call
+            const uniqueSessionId = `session-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
             const newSession = {
-                id: `session-${Date.now()}`,
+                id: uniqueSessionId,
                 title: t('aiChat.history.untitled'),
                 context: JSON.stringify({ task: taskContext, mode: activeMode }),
                 createdAt: new Date().toISOString()
             };
 
-            setSessions([newSession, ...sessions]);
+            setSessions(prev => {
+                if (prev.some(s => s.id === uniqueSessionId)) return prev;
+                return [newSession, ...prev];
+            });
             setCurrentSessionId(newSession.id);
 
             // Initial AI Greeting
             const greeting = {
                 id: 'welcome',
                 sender: 'ai',
-                text: t('aiChat.messages.greeting', { context: getContextLabel(taskContext), mode: getModeLabel(activeMode) }),
+                text: '🤖 **ShadowMate Study Co-Pilot**\n\nHello! I am your adaptive study assistant. I learn your study habits, manage your assignments, and auto-rebalance your study blocks when deadlines change.\n\nHow can I help you today?',
                 timestamp: new Date().toISOString()
             };
             setMessages([greeting]);
 
-            // If an initial message was provided (clicked from prompts), send it immediately
             if (initialMessage) {
                 await sendMessageToSession(newSession.id, initialMessage, [greeting]);
             }
 
         } catch (error) {
             console.error('Failed to create session', error);
-            alert(t('common.error'));
         }
     };
 
@@ -214,15 +277,25 @@ const AIAgentChat = () => {
 
             setCurrentSessionId(session.id);
 
-            // Parse context if exists
             if (session.context) {
-                const ctx = JSON.parse(session.context);
-                setTaskContext(ctx.task || 'Report Generation');
-                setActiveMode(ctx.mode || 'Conversation');
+                try {
+                    const ctx = JSON.parse(session.context);
+                    setTaskContext(ctx.task || 'Report Generation');
+                    setActiveMode(ctx.mode || 'Conversation');
+                } catch (e) {}
             }
 
-            // For now, start with a fresh greeting when selecting a session
-            // You can add message persistence to localStorage if needed
+            // Restore messages for selected session
+            const savedMsgsStr = localStorage.getItem('shadowmate_copilot_messages');
+            if (savedMsgsStr) {
+                const parsedMsgs = JSON.parse(savedMsgsStr);
+                if (parsedMsgs && parsedMsgs[sessionId] && parsedMsgs[sessionId].length > 0) {
+                    setMessages(parsedMsgs[sessionId]);
+                    return;
+                }
+            }
+
+            // Default fallback message if no stored history for this session
             const greeting = {
                 id: 'welcome',
                 sender: 'ai',

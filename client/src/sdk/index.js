@@ -2,6 +2,7 @@
 export { default as MMCard } from './components/MMCard';
 export { default as MMButton } from './components/MMButton';
 export { default as MMBadge } from './components/MMBadge';
+export { default as MMAlert } from './components/MMAlert';
 
 // Data & Inputs
 export { default as MMTable } from './components/MMTable';
