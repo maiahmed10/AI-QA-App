@@ -1,0 +1,67 @@
+/* QAReportsPage.css */
+.qa-reports-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    color: #F8FAFC;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.qa-reports-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.qa-reports-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #F8FAFC;
+    margin: 0;
+}
+
+.qa-reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+.qa-report-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.qa-report-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qa-report-card h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #F8FAFC;
+    margin: 0;
+}
+
+.qa-report-card p {
+    font-size: 0.85rem;
+    color: #94A3B8;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.qa-report-meta {
+    font-size: 0.75rem;
+    color: #818CF8;
+    margin-top: 0.5rem;
+}

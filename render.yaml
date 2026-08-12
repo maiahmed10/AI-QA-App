@@ -1,0 +1,17 @@
+# Render Deployment Configuration for AI QA Testing Platform
+services:
+  - type: web
+    name: ai-qa-testing-platform
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: VITE_QA_WEBHOOK_URL
+        sync: false
+      - key: VITE_API_ENDPOINT
+        sync: false

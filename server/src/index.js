@@ -62,11 +62,26 @@ app.get('/api', (req, res) => {
     });
 });
 
-// 404 handler
-app.use((req, res) => {
+// Serve built frontend static assets in production
+const path = require('path');
+const fs = require('fs');
+const clientDistPath = path.join(__dirname, '../../client/dist');
+
+if (fs.existsSync(clientDistPath)) {
+    app.use(express.static(clientDistPath));
+    app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api')) {
+            return next();
+        }
+        res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+}
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
     res.status(404).json({
         error: 'Not Found',
-        message: `Route ${req.method} ${req.path} not found`
+        message: `API Route ${req.method} ${req.path} not found`
     });
 });
 

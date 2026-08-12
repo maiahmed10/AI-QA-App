@@ -1,98 +1,313 @@
-/* QASidebar.css - Executive Navigation Sidebar */
+/* QASidebar.css - Modern AI SaaS Developer Navigation Sidebar */
+
 .qa-sidebar {
     width: 260px;
     height: 100vh;
-    position: sticky;
+    position: fixed;
     top: 0;
-    background: #121212;
-    border-right: 1px solid #242424;
+    left: 0;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.85);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 0.9rem;
     box-sizing: border-box;
     flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+    user-select: none;
 }
 
+.qa-sidebar.collapsed {
+    width: 76px;
+    padding: 1.25rem 0.6rem;
+}
+
+/* Sidebar Toggle Collapse Button */
+.qa-sidebar-toggle-btn {
+    position: absolute;
+    top: 22px;
+    right: -13px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 110;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.qa-sidebar-toggle-btn:hover {
+    background: #6366F1;
+    color: #FFFFFF;
+    border-color: #6366F1;
+    transform: scale(1.1);
+}
+
+/* Brand Section */
 .qa-sidebar-brand {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.5rem 0.5rem 1.25rem;
-    border-bottom: 1px solid #222;
+    padding: 0.25rem 0.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
 }
 
-.qa-sidebar-logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    background: rgba(224, 170, 62, 0.15);
-    border: 1px solid rgba(224, 170, 62, 0.3);
-    color: #E0AA3E;
+.qa-sidebar-logo-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
 }
 
-.qa-sidebar-tag {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: #E0AA3E;
-    letter-spacing: 0.08em;
+.qa-sidebar-brand:hover .qa-sidebar-logo-badge {
+    transform: scale(1.05);
 }
 
-.qa-sidebar-title {
-    font-size: 1.05rem;
+.qa-spark-icon {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+.qa-brand-text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.qa-brand-title {
+    font-size: 0.95rem;
     font-weight: 800;
-    color: #FFF;
+    color: #F8FAFC;
     margin: 0;
+    letter-spacing: -0.01em;
 }
 
+.qa-brand-subtitle {
+    font-size: 0.7rem;
+    color: #8B5CF6;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Navigation Section */
 .qa-sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 1.1rem;
     margin-top: 1.25rem;
     flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.qa-sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.qa-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.qa-nav-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .qa-nav-section-title {
-    font-size: 0.675rem;
-    font-weight: 800;
-    color: #666;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748B;
     letter-spacing: 0.08em;
-    padding: 0.4rem 0.6rem;
+    padding: 0.3rem 0.6rem;
+    text-transform: uppercase;
 }
 
+/* Nav Item Styling */
 .qa-nav-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.65rem 0.85rem;
-    border-radius: 9px;
-    color: #9CA3AF;
-    font-weight: 700;
+    padding: 0.65rem 0.8rem;
+    border-radius: 10px;
+    color: #94A3B8;
+    font-weight: 600;
     font-size: 0.875rem;
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.qa-sidebar.collapsed .qa-nav-item {
+    justify-content: center;
+    padding: 0.65rem 0;
 }
 
 .qa-nav-item:hover {
     background: rgba(255, 255, 255, 0.04);
-    color: #FFF;
+    color: #F8FAFC;
+    transform: translateX(2px);
+}
+
+.qa-sidebar.collapsed .qa-nav-item:hover {
+    transform: none;
 }
 
 .qa-nav-item.active {
-    background: linear-gradient(135deg, #E0AA3E, #B8860B);
-    color: #0F0F0F;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.06) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #818CF8;
 }
 
+.qa-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    border-radius: 0 4px 4px 0;
+    background: #6366F1;
+    box-shadow: 0 0 10px #6366F1;
+}
+
+.qa-nav-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.qa-nav-item:hover .qa-nav-icon {
+    color: #818CF8;
+    transform: scale(1.1);
+}
+
+.qa-nav-icon.icon-ai {
+    color: #8B5CF6;
+}
+
+.qa-nav-icon.icon-bug {
+    color: #F43F5E;
+}
+
+.qa-nav-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.qa-nav-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
+}
+
+.qa-help-item {
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+}
+
+.qa-nav-section-bottom {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 0.75rem;
+}
+
+/* Status Card Bottom */
+.qa-sidebar-status-card {
+    background: rgba(16, 185, 129, 0.06);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+    padding: 0.75rem 0.85rem;
+    margin-top: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.qa-sidebar.collapsed .qa-sidebar-status-card {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.qa-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.qa-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 10px #10B981;
+    animation: qa-pulse-green 2s infinite;
+    flex-shrink: 0;
+}
+
+.qa-status-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.qa-status-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #F8FAFC;
+}
+
+.qa-status-state {
+    font-size: 0.68rem;
+    color: #10B981;
+    font-weight: 600;
+}
+
+@keyframes qa-pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+/* Footer Section */
 .qa-sidebar-footer {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding-top: 1rem;
-    border-top: 1px solid #222;
+    gap: 0.6rem;
+    padding-top: 0.85rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .qa-theme-toggle-btn {
@@ -103,76 +318,244 @@
     width: 100%;
     padding: 0.5rem;
     border-radius: 8px;
-    background: #1A1A1A;
-    border: 1px solid #2A2A2A;
-    color: #DDD;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #CBD5E1;
     font-size: 0.775rem;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.qa-theme-toggle-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818CF8;
+    border-color: rgba(99, 102, 241, 0.3);
 }
 
 .qa-sidebar-user {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #181818;
-    border: 1px solid #262626;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    padding: 0.6rem 0.75rem;
+    padding: 0.5rem 0.65rem;
+}
+
+.qa-sidebar.collapsed .qa-sidebar-user {
+    justify-content: center;
+    padding: 0.4rem;
 }
 
 .qa-user-info {
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    overflow: hidden;
 }
 
 .qa-avatar {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: #E0AA3E;
-    color: #0F0F0F;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.85rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .qa-user-details {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .qa-user-name {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #FFF;
+    color: #F8FAFC;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .qa-user-role {
-    font-size: 0.675rem;
-    color: #888;
+    font-size: 0.65rem;
+    color: #8B5CF6;
+    font-weight: 600;
 }
 
 .qa-logout-btn {
     background: transparent;
     border: none;
-    color: #EF4444;
+    color: #F43F5E;
     cursor: pointer;
-    padding: 0.25rem;
+    padding: 0.3rem;
+    border-radius: 6px;
     display: flex;
     align-items: center;
+    transition: background 0.2s ease;
 }
 
-/* Light Theme Overrides */
+.qa-logout-btn:hover {
+    background: rgba(244, 63, 94, 0.15);
+}
+
+/* Help Modal Dialog */
+.qa-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.qa-modal-card {
+    background: #0F172A;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 640px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: qa-modal-in 0.25s ease-out;
+}
+
+@keyframes qa-modal-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.qa-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.qa-modal-title-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+
+.qa-accent-icon {
+    color: #818CF8;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.qa-modal-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #F8FAFC;
+    margin: 0 0 0.25rem;
+}
+
+.qa-modal-subtitle {
+    font-size: 0.85rem;
+    color: #94A3B8;
+    margin: 0;
+}
+
+.qa-modal-close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94A3B8;
+    border-radius: 8px;
+    padding: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.qa-modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+}
+
+.qa-modal-body {
+    padding: 1.5rem;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+.qa-help-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.qa-help-card {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1.2rem;
+}
+
+.qa-help-icon {
+    color: #818CF8;
+    margin-bottom: 0.5rem;
+}
+
+.qa-help-card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0 0 0.4rem;
+}
+
+.qa-help-card p {
+    font-size: 0.8rem;
+    color: #94A3B8;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.qa-modal-footer {
+    padding: 1rem 1.5rem;
+    background: rgba(15, 23, 42, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.qa-primary-btn {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: 9px;
+    padding: 0.6rem 1.25rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.2s ease;
+}
+
+.qa-primary-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* Light Mode Overrides */
 html[data-theme='light'] .qa-sidebar {
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.95);
     border-right-color: #E2E8F0;
 }
 
-html[data-theme='light'] .qa-sidebar-title,
+html[data-theme='light'] .qa-brand-title,
 html[data-theme='light'] .qa-user-name {
     color: #0F172A;
 }
@@ -188,11 +571,45 @@ html[data-theme='light'] .qa-nav-item:not(.active):hover {
 
 html[data-theme='light'] .qa-sidebar-user {
     background: #F8FAFC;
-    border-color: #E2E8F0;
+    border-color: #CBD5E1;
 }
 
 html[data-theme='light'] .qa-theme-toggle-btn {
     background: #F1F5F9;
     border-color: #CBD5E1;
     color: #334155;
+}
+
+html[data-theme='light'] .qa-modal-card {
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+}
+
+html[data-theme='light'] .qa-modal-title {
+    color: #0F172A;
+}
+
+html[data-theme='light'] .qa-help-card {
+    background: #F8FAFC;
+    border-color: #E2E8F0;
+}
+
+html[data-theme='light'] .qa-help-card h4 {
+    color: #0F172A;
+}
+
+/* Mobile & Tablet Responsive */
+@media (max-width: 768px) {
+    .qa-sidebar {
+        transform: translateX(-100%);
+    }
+
+    .qa-sidebar.mobile-open {
+        transform: translateX(0);
+        width: 260px;
+    }
+
+    .qa-help-grid {
+        grid-template-columns: 1fr;
+    }
 }

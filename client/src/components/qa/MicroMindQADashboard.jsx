@@ -1,647 +1,537 @@
-import React, { useState, useMemo } from 'react';
-import { initialTestCasesData, initialBugsData, API_ENDPOINT, LOCAL_API_ENDPOINT } from '../../data/qaTestData';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getTestingHistory } from '../../services/qaHistoryService';
+import { getTestCases, getBugs } from '../../services/qaTestCaseService';
+
 import {
+    Sparkles,
+    BarChart3,
     CheckCircle2,
     XCircle,
-    AlertCircle,
-    PieChart as PieIcon,
-    BarChart3,
     Bug,
-    Terminal,
+    TrendingUp,
     Search,
-    Filter,
-    Play,
-    RefreshCw,
     ShieldAlert,
-    Copy,
-    Check,
-    ChevronDown,
-    ChevronUp,
-    Zap,
-    Cpu
+    Plus,
+    Layers,
+    Play,
+    Percent,
+    PieChart as PieIcon,
+    BarChart as BarIcon,
+    Clock,
+    ArrowRight
 } from 'lucide-react';
+
 import {
+    ResponsiveContainer,
+    BarChart,
+    Bar,
     PieChart,
     Pie,
     Cell,
-    ResponsiveContainer,
-    Tooltip,
-    Legend,
-    BarChart,
-    Bar,
+    CartesianGrid,
     XAxis,
     YAxis,
-    CartesianGrid
+    Tooltip,
+    Legend
 } from 'recharts';
+
 import './MicroMindQADashboard.css';
 
 const MicroMindQADashboard = () => {
-    const [testCases] = useState(initialTestCasesData);
-    const [bugs] = useState(initialBugsData);
+    const navigate = useNavigate();
+
+    // Live Unified State (Driven strictly by single source of truth)
+    const [testCases, setTestCases] = useState(() => getTestCases());
+    const [bugs, setBugs] = useState(() => getBugs());
+    const [historyList, setHistoryList] = useState(() => getTestingHistory());
+
+    // Search Filter State
     const [searchQuery, setSearchQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('ALL');
-    const [expandedRow, setExpandedRow] = useState(null);
-    const [copiedUrl, setCopiedUrl] = useState(false);
 
-    // Live API Tester State
-    const [livePayload, setLivePayload] = useState('{"message": "Hello World"}');
-    const [liveTargetUrl, setLiveTargetUrl] = useState(LOCAL_API_ENDPOINT);
-    const [liveResponse, setLiveResponse] = useState(null);
-    const [isTestingLive, setIsTestingLive] = useState(false);
+    // Dynamic Refresh: Re-fetch execution history & recalculate all metrics automatically
+    useEffect(() => {
+        const handleSync = () => {
+            setTestCases(getTestCases());
+            setBugs(getBugs());
+            setHistoryList(getTestingHistory());
+        };
 
-    // Dynamic Summary Calculations (Separates defined Test Cases from Test Runs/History)
+        window.addEventListener('qa_test_cases_updated', handleSync);
+        window.addEventListener('qa_testing_history_updated', handleSync);
+        return () => {
+            window.removeEventListener('qa_test_cases_updated', handleSync);
+            window.removeEventListener('qa_testing_history_updated', handleSync);
+        };
+    }, []);
+
+    // Dynamic Time-Based Greeting
+    const greeting = useMemo(() => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good morning 👋';
+        if (hour < 18) return 'Good afternoon 👋';
+        return 'Good evening 👋';
+    }, []);
+
+    // 1. DASHBOARD METRICS DEFINITIONS:
+    // - Test Cases = unique saved test cases count
+    // - Executions = total actual test executions
+    // - Passed = executions with status PASS
+    // - Failed = executions with status FAIL (e.g. 25)
+    // - Pass Rate = Passed / Executions × 100
+    // - Unique Defects = calculated from actual deduplicated defects (e.g. 4)
     const metrics = useMemo(() => {
-        let historyList = [];
-        try { historyList = getTestingHistory(); } catch (e) { }
+        const executed = historyList ? historyList.length : 0;
+        let passed = 0;
+        let failed = 0;
 
-        // Defined Unique Test Cases Metrics (4 Test Cases)
-        const total = testCases.length;
-        const passed = testCases.filter((tc) => tc.status === 'PASS').length;
-        const failed = testCases.filter((tc) => tc.status === 'FAIL').length;
-        const notExecuted = testCases.filter(
-            (tc) => tc.status === 'NOT EXECUTED' || tc.status === 'BLOCKED'
-        ).length;
-        const executed = total - notExecuted;
+        if (historyList && historyList.length > 0) {
+            historyList.forEach(h => {
+                if (h.status === 'PASS') passed++;
+                else if (h.status === 'FAIL') failed++;
+            });
+        }
 
-        const overallSuccessRate = total > 0 ? ((passed / total) * 100).toFixed(1) : '0.0';
-        const executedSuccessRate = executed > 0 ? ((passed / executed) * 100).toFixed(1) : '0.0';
-
-        // Separate Test Runs Execution Metrics from Testing History
-        const totalTestRuns = historyList.length;
-        const passedRuns = historyList.filter(h => h.status === 'PASS').length;
-        const failedRuns = historyList.filter(h => h.status === 'FAIL').length;
+        const totalTestCases = testCases ? testCases.length : 0;
+        const passRate = executed > 0 ? Math.round((passed / executed) * 100) : 0;
+        const bugCount = bugs ? bugs.length : 0;
 
         return {
-            total,
+            testCases: totalTestCases,
+            executed,
             passed,
             failed,
-            notExecuted,
-            executed,
-            overallSuccessRate,
-            executedSuccessRate,
-            totalTestRuns,
-            passedRuns,
-            failedRuns
+            passRate,
+            bugCount
         };
-    }, [testCases]);
+    }, [historyList, testCases, bugs]);
 
-    // Data for Visual Distribution Charts
-    const pieChartData = [
-        { name: 'PASS', value: metrics.passed, color: '#10B981' },
-        { name: 'FAIL', value: metrics.failed, color: '#EF4444' },
-        { name: 'NOT EXECUTED', value: metrics.notExecuted, color: '#F59E0B' }
-    ];
+    // 2. CHART 1 DATA: Bar Chart — Test Results (Passed vs Failed from live execution history)
+    const barChartData = useMemo(() => {
+        return [
+            { category: 'Passed', count: metrics.passed, fill: '#10B981' },
+            { category: 'Failed', count: metrics.failed, fill: '#EF4444' }
+        ];
+    }, [metrics]);
 
-    const barChartData = [
-        { name: 'Passed', count: metrics.passed, fill: '#10B981' },
-        { name: 'Failed', count: metrics.failed, fill: '#EF4444' },
-        { name: 'Not Executed', count: metrics.notExecuted, fill: '#F59E0B' }
-    ];
+    // 2. CHART 2 DATA: Pie Chart — Execution Distribution (Proportion of Passed vs Failed)
+    const pieChartData = useMemo(() => {
+        const data = [
+            { name: 'Passed', value: metrics.passed, color: '#10B981' },
+            { name: 'Failed', value: metrics.failed, color: '#EF4444' }
+        ];
+        return data.filter(d => d.value > 0);
+    }, [metrics]);
 
-    // Filtered Test Cases
-    const filteredCases = useMemo(() => {
-        return testCases.filter((tc) => {
-            const matchesSearch =
-                tc.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                tc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                tc.expectedResult.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                tc.actualResult.toLowerCase().includes(searchQuery.toLowerCase());
+    // 3. RECENT TEST EXECUTIONS (Newest executions first)
+    const displayExecutions = useMemo(() => {
+        if (!historyList || historyList.length === 0) return [];
 
-            const matchesStatus =
-                statusFilter === 'ALL' ||
-                (statusFilter === 'PASS' && tc.status === 'PASS') ||
-                (statusFilter === 'FAIL' && tc.status === 'FAIL') ||
-                (statusFilter === 'NOT_EXECUTED' && (tc.status === 'NOT EXECUTED' || tc.status === 'BLOCKED'));
+        const sorted = [...historyList].reverse().map((h, idx) => ({
+            id: h.id || h.executionId || `EXEC-${historyList.length - idx}`,
+            testCaseId: h.testCaseId || `TC-00${(idx % 8) + 1}`,
+            description: h.description || h.question || 'API Test Execution',
+            method: h.method || (h.target ? (h.target.split(' ')[0] || 'POST') : 'POST'),
+            status: h.status === 'PASS' ? 'PASS' : 'FAIL',
+            httpStatus: h.httpCode || h.httpStatus || h.actualStatus || 'Not provided',
+            responseTime: (h.timeMs !== undefined && h.timeMs !== 'Not provided') ? (typeof h.timeMs === 'number' ? `${h.timeMs}ms` : String(h.timeMs)) : 'Not provided',
+            date: h.timestamp || h.date || 'Just now',
+            raw: h
+        }));
 
-            return matchesSearch && matchesStatus;
-        });
-    }, [testCases, searchQuery, statusFilter]);
-
-    // Copy URL helper
-    const handleCopyUrl = (urlStr) => {
-        navigator.clipboard.writeText(urlStr);
-        setCopiedUrl(true);
-        setTimeout(() => setCopiedUrl(false), 2000);
-    };
-
-    // Live API Test Execution
-    const handleRunLiveTest = async () => {
-        setIsTestingLive(true);
-        setLiveResponse(null);
-        const startTime = Date.now();
-
-        try {
-            let parsedBody;
-            try {
-                parsedBody = JSON.parse(livePayload);
-            } catch (e) {
-                setLiveResponse({
-                    error: true,
-                    status: 'Client Syntax Error',
-                    timeMs: Date.now() - startTime,
-                    data: { message: 'Invalid JSON payload format provided in runner input' }
-                });
-                setIsTestingLive(false);
-                return;
-            }
-
-            const res = await fetch(liveTargetUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(parsedBody)
-            });
-
-            const resData = await res.json().catch(() => ({ message: 'Non-JSON response' }));
-            const duration = Date.now() - startTime;
-
-            setLiveResponse({
-                status: res.status,
-                statusText: res.statusText,
-                ok: res.ok,
-                timeMs: duration,
-                data: resData
-            });
-        } catch (err) {
-            setLiveResponse({
-                error: true,
-                status: 'Network Error',
-                timeMs: Date.now() - startTime,
-                data: { message: err.message || 'Failed to reach API endpoint' }
-            });
-        } finally {
-            setIsTestingLive(false);
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            return sorted.filter(item =>
+                item.description.toLowerCase().includes(q) ||
+                item.method.toLowerCase().includes(q) ||
+                item.id.toLowerCase().includes(q) ||
+                item.testCaseId.toLowerCase().includes(q)
+            );
         }
-    };
 
-    // Helper badge renderer
-    const renderStatusBadge = (status) => {
-        switch (status) {
-            case 'PASS':
-                return (
-                    <span className="qa-badge badge-pass">
-                        <CheckCircle2 size={13} />
-                        <span>PASS</span>
-                    </span>
-                );
-            case 'FAIL':
-                return (
-                    <span className="qa-badge badge-fail">
-                        <XCircle size={13} />
-                        <span>FAIL</span>
-                    </span>
-                );
-            case 'NOT EXECUTED':
-            case 'BLOCKED':
-            default:
-                return (
-                    <span className="qa-badge badge-not-executed">
-                        <AlertCircle size={13} />
-                        <span>NOT EXECUTED</span>
-                    </span>
-                );
-        }
-    };
+        return sorted;
+    }, [historyList, searchQuery]);
+
+    // 4. RECENT BUGS (Unique Deduplicated Defects)
+    const displayBugs = useMemo(() => {
+        if (!bugs || bugs.length === 0) return [];
+        return [...bugs].reverse().map(b => ({
+            id: b.id,
+            title: b.title || b.description || 'Validation Defect',
+            severity: (b.severity || 'HIGH').toUpperCase(),
+            testCase: b.testCaseId || b.id.replace('BUG', 'TC'),
+            occurrences: b.occurrences || (b.relatedExecutions ? b.relatedExecutions.length : 1),
+            status: b.status || 'Open'
+        }));
+    }, [bugs]);
 
     return (
-        <div className="mm-qa-dashboard">
-            {/* Top Brand Header */}
-            <header className="mm-qa-header">
-                <div className="mm-qa-header-brand">
-                    <div className="mm-qa-logo-box">
-                        <Cpu size={24} className="mm-qa-logo-icon" />
+        <div className="mm-dashboard-container">
+            {/* DASHBOARD HEADER */}
+            <header className="mm-dash-header">
+                <div>
+                    <div className="mm-greeting-pill">
+                        <Sparkles size={14} className="mm-spark-accent" />
+                        <span>AI QA MONITORING DASHBOARD</span>
                     </div>
-                    <div>
-                        <div className="mm-qa-header-subtitle">MICROMIND AI QA SUITE</div>
-                        <h1 className="mm-qa-header-title">MicroMind QA Dashboard</h1>
-                    </div>
+                    <h1 className="mm-dash-greeting">{greeting}</h1>
+                    <p className="mm-dash-subtitle">
+                        Real-time execution analytics, passed vs failed metrics, and defect reporting.
+                    </p>
                 </div>
 
-                <div className="mm-qa-header-endpoint">
-                    <div className="mm-endpoint-pill">
-                        <span className="mm-pulse-dot"></span>
-                        <span className="mm-endpoint-label">LIVE API:</span>
-                        <code className="mm-endpoint-url">{API_ENDPOINT}</code>
-                        <button
-                            className="mm-copy-btn"
-                            onClick={() => handleCopyUrl(API_ENDPOINT)}
-                            title="Copy Public Endpoint URL"
-                        >
-                            {copiedUrl ? <Check size={14} style={{ color: '#10B981' }} /> : <Copy size={14} />}
-                        </button>
-                    </div>
+                <div className="mm-dash-actions">
+                    <button
+                        className="mm-btn-primary"
+                        onClick={() => navigate('/ai-qa-testing')}
+                    >
+                        <Plus size={18} />
+                        <span>Create New Test</span>
+                    </button>
                 </div>
             </header>
 
-            {/* Dynamic Summary Metric Cards */}
-            <section className="mm-summary-grid">
-                {/* Total Test Cases */}
-                <div className="mm-card mm-metric-card">
-                    <div className="mm-metric-header">
-                        <span className="mm-metric-title">Total Test Cases</span>
-                        <div className="mm-metric-icon icon-total">
-                            <BarChart3 size={18} />
+            {/* DYNAMIC METRICS CARDS */}
+            <section className="mm-stats-grid" style={{ gridTemplateColumns: 'repeat(5, 1fr)', marginBottom: '1.5rem' }}>
+                {/* Metric 1: Test Cases */}
+                <div className="mm-stat-card">
+                    <div className="mm-stat-header">
+                        <span className="mm-stat-label">TEST CASES</span>
+                        <div className="mm-stat-icon-wrapper icon-indigo">
+                            <Layers size={18} />
                         </div>
                     </div>
-                    <div className="mm-metric-value">{metrics.total}</div>
-                    <div className="mm-metric-footer">
-                        <span>{metrics.totalTestRuns} Total Executed Test Runs</span>
+                    <div className="mm-stat-body">
+                        <div className="mm-stat-number">{metrics.testCases}</div>
+                        <div className="mm-stat-trend trend-positive">
+                            <BarChart3 size={13} />
+                            <span>Unique Suite</span>
+                        </div>
+                    </div>
+                    <div className="mm-stat-footer">
+                        <span>Configured Test Cases</span>
                     </div>
                 </div>
 
-                {/* Passed Test Cases */}
-                <div className="mm-card mm-metric-card">
-                    <div className="mm-metric-header">
-                        <span className="mm-metric-title">Passed Cases</span>
-                        <div className="mm-metric-icon icon-pass">
+                {/* Metric 2: Executions */}
+                <div className="mm-stat-card">
+                    <div className="mm-stat-header">
+                        <span className="mm-stat-label">EXECUTIONS</span>
+                        <div className="mm-stat-icon-wrapper icon-indigo">
+                            <Play size={18} />
+                        </div>
+                    </div>
+                    <div className="mm-stat-body">
+                        <div className="mm-stat-number">{metrics.executed}</div>
+                        <div className="mm-stat-trend trend-positive">
+                            <TrendingUp size={13} />
+                            <span>Total Executions</span>
+                        </div>
+                    </div>
+                    <div className="mm-stat-footer">
+                        <span>Recorded Executions</span>
+                    </div>
+                </div>
+
+                {/* Metric 3: Passed */}
+                <div className="mm-stat-card">
+                    <div className="mm-stat-header">
+                        <span className="mm-stat-label">PASSED</span>
+                        <div className="mm-stat-icon-wrapper icon-emerald">
                             <CheckCircle2 size={18} />
                         </div>
                     </div>
-                    <div className="mm-metric-value text-pass">{metrics.passed}</div>
-                    <div className="mm-metric-footer text-pass">
-                        <span>{metrics.passedRuns} Passed History Runs</span>
+                    <div className="mm-stat-body">
+                        <div className="mm-stat-number text-emerald">{metrics.passed}</div>
+                        <div className="mm-stat-badge badge-emerald">
+                            <span>Successful</span>
+                        </div>
+                    </div>
+                    <div className="mm-stat-footer">
+                        <span>PASS Status Executions</span>
                     </div>
                 </div>
 
-                {/* Failed Test Cases */}
-                <div className="mm-card mm-metric-card">
-                    <div className="mm-metric-header">
-                        <span className="mm-metric-title">Failed Cases</span>
-                        <div className="mm-metric-icon icon-fail">
+                {/* Metric 4: Failed Executions */}
+                <div className="mm-stat-card">
+                    <div className="mm-stat-header">
+                        <span className="mm-stat-label">FAILED EXECUTIONS</span>
+                        <div className="mm-stat-icon-wrapper icon-rose">
                             <XCircle size={18} />
                         </div>
                     </div>
-                    <div className="mm-metric-value text-fail">{metrics.failed}</div>
-                    <div className="mm-metric-footer text-fail">
-                        <span>{metrics.failedRuns} Failed History Runs (BUG-001)</span>
+                    <div className="mm-stat-body">
+                        <div className="mm-stat-number text-rose">{metrics.failed}</div>
+                        <div className="mm-stat-badge badge-rose">
+                            <span>{metrics.bugCount} Unique Bugs</span>
+                        </div>
+                    </div>
+                    <div className="mm-stat-footer">
+                        <span>FAIL Status Executions</span>
                     </div>
                 </div>
 
-                {/* Not Executed */}
-                <div className="mm-card mm-metric-card">
-                    <div className="mm-metric-header">
-                        <span className="mm-metric-title">Not Executed</span>
-                        <div className="mm-metric-icon icon-warn">
-                            <AlertCircle size={18} />
+                {/* Metric 5: Pass Rate */}
+                <div className="mm-stat-card">
+                    <div className="mm-stat-header">
+                        <span className="mm-stat-label">PASS RATE</span>
+                        <div className="mm-stat-icon-wrapper icon-emerald">
+                            <Percent size={18} />
                         </div>
                     </div>
-                    <div className="mm-metric-value text-warn">{metrics.notExecuted}</div>
-                    <div className="mm-metric-footer text-warn">
-                        <span>0 Blocked Cases</span>
-                    </div>
-                </div>
-
-                {/* Success Rate */}
-                <div className="mm-card mm-metric-card card-rate">
-                    <div className="mm-metric-header">
-                        <span className="mm-metric-title">Success Rate</span>
-                        <div className="mm-metric-icon icon-gold">
-                            <Zap size={18} />
+                    <div className="mm-stat-body">
+                        <div className="mm-stat-number text-emerald">{metrics.passRate}%</div>
+                        <div className="mm-stat-badge badge-emerald">
+                            <span>Quality Index</span>
                         </div>
                     </div>
-                    <div className="mm-metric-value text-gold">{metrics.overallSuccessRate}%</div>
-                    <div className="mm-metric-footer">
-                        <span>{metrics.passed} Passed / {metrics.total} Unique Test Cases</span>
+                    <div className="mm-stat-footer">
+                        <span>Passed / Executions × 100</span>
                     </div>
                 </div>
             </section>
 
-            {/* Charts & Distribution Section */}
-            <section className="mm-charts-section">
-                {/* Pie Chart */}
-                <div className="mm-card mm-chart-card">
-                    <div className="mm-card-header">
-                        <div className="mm-card-title-group">
-                            <PieIcon size={18} className="text-gold" />
-                            <h3 className="mm-card-title">Test Result Distribution</h3>
+            {/* TWO CHARTS SECTION */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                {/* CHART 1: BAR CHART — TEST RESULTS */}
+                <section className="mm-dash-card">
+                    <div className="mm-card-top-bar">
+                        <div>
+                            <div className="mm-card-pretitle" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <BarIcon size={14} className="text-indigo" />
+                                <span>BAR CHART</span>
+                            </div>
+                            <h3 className="mm-card-heading">Test Results (Passed vs Failed)</h3>
                         </div>
-                        <span className="mm-card-badge">{metrics.total} Cases</span>
                     </div>
-                    <div className="mm-chart-container">
-                        <ResponsiveContainer width="100%" height={240}>
-                            <PieChart>
-                                <Pie
-                                    data={pieChartData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={55}
-                                    outerRadius={85}
-                                    paddingAngle={4}
-                                    dataKey="value"
-                                >
-                                    {pieChartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: '#1E1E1E',
-                                        borderColor: '#333',
-                                        borderRadius: '8px',
-                                        color: '#FFF'
-                                    }}
-                                />
-                                <Legend
-                                    verticalAlign="bottom"
-                                    height={36}
-                                    formatter={(value) => <span style={{ color: '#DDD', fontSize: '0.85rem' }}>{value}</span>}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
 
-                {/* Bar Chart */}
-                <div className="mm-card mm-chart-card">
-                    <div className="mm-card-header">
-                        <div className="mm-card-title-group">
-                            <BarChart3 size={18} className="text-gold" />
-                            <h3 className="mm-card-title">Status Breakdown</h3>
+                    <div className="mm-chart-box" style={{ height: '240px', padding: '1rem 0' }}>
+                        {metrics.executed === 0 ? (
+                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#64748B', gap: '0.5rem' }}>
+                                <BarChart3 size={32} />
+                                <span>No execution data recorded yet.</span>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={barChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
+                                    <XAxis dataKey="category" stroke="#94A3B8" fontSize={12} tickLine={false} />
+                                    <YAxis stroke="#94A3B8" fontSize={12} tickLine={false} allowDecimals={false} />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: '#0F172A',
+                                            borderColor: 'rgba(255, 255, 255, 0.12)',
+                                            borderRadius: '8px',
+                                            color: '#F8FAFC'
+                                        }}
+                                    />
+                                    <Bar dataKey="count" name="Executions" radius={[6, 6, 0, 0]}>
+                                        {barChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
+                    </div>
+                </section>
+
+                {/* CHART 2: PIE CHART — EXECUTION DISTRIBUTION */}
+                <section className="mm-dash-card">
+                    <div className="mm-card-top-bar">
+                        <div>
+                            <div className="mm-card-pretitle" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <PieIcon size={14} className="text-indigo" />
+                                <span>PIE CHART</span>
+                            </div>
+                            <h3 className="mm-card-heading">Execution Distribution</h3>
                         </div>
-                        <span className="mm-card-badge">Executed: {metrics.executed}</span>
-                    </div>
-                    <div className="mm-chart-container">
-                        <ResponsiveContainer width="100%" height={240}>
-                            <BarChart data={barChartData} margin={{ top: 20, right: 20, left: -20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
-                                <XAxis dataKey="name" stroke="#888" fontSize={12} />
-                                <YAxis stroke="#888" fontSize={12} allowDecimals={false} />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: '#1E1E1E',
-                                        borderColor: '#333',
-                                        borderRadius: '8px',
-                                        color: '#FFF'
-                                    }}
-                                />
-                                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                                    {barChartData.map((entry, index) => (
-                                        <Cell key={`bar-${index}`} fill={entry.fill} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </section>
-
-            {/* Test Cases Table Section */}
-            <section className="mm-card mm-table-section">
-                <div className="mm-table-controls">
-                    <div className="mm-card-title-group">
-                        <Terminal size={18} className="text-gold" />
-                        <h3 className="mm-card-title">Test Cases Results</h3>
-                        <span className="mm-count-pill">{filteredCases.length} Cases</span>
                     </div>
 
-                    <div className="mm-filter-bar">
-                        {/* Search Input */}
+                    <div className="mm-chart-box" style={{ height: '240px', padding: '1rem 0' }}>
+                        {metrics.executed === 0 ? (
+                            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#64748B', gap: '0.5rem' }}>
+                                <PieIcon size={32} />
+                                <span>No execution data recorded yet.</span>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: '#0F172A',
+                                            borderColor: 'rgba(255, 255, 255, 0.12)',
+                                            borderRadius: '8px',
+                                            color: '#F8FAFC'
+                                        }}
+                                    />
+                                    <Legend verticalAlign="bottom" height={36} />
+                                    <Pie
+                                        data={pieChartData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={50}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        nameKey="name"
+                                    >
+                                        {pieChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        )}
+                    </div>
+                </section>
+            </div>
+
+            {/* RECENT TEST EXECUTIONS TABLE */}
+            <section className="mm-dash-card mm-table-card" style={{ marginBottom: '1.5rem' }}>
+                <div className="mm-table-header-row">
+                    <div>
+                        <div className="mm-card-pretitle">EXECUTION LOGS</div>
+                        <h3 className="mm-card-heading">
+                            Recent Test Executions (Showing {Math.min(5, displayExecutions.length)} of {metrics.executed} executions)
+                        </h3>
+                    </div>
+
+                    <div className="mm-table-filters" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <div className="mm-search-box">
                             <Search size={15} className="mm-search-icon" />
                             <input
                                 type="text"
-                                placeholder="Search test cases or results..."
+                                placeholder="Search executions..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="mm-search-input"
                             />
                         </div>
 
-                        {/* Status Filter */}
-                        <div className="mm-filter-group">
-                            <Filter size={14} className="text-muted" />
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="mm-filter-select"
-                            >
-                                <option value="ALL">All Statuses</option>
-                                <option value="PASS">PASS</option>
-                                <option value="FAIL">FAIL</option>
-                                <option value="NOT_EXECUTED">NOT EXECUTED</option>
-                            </select>
-                        </div>
+                        <button
+                            onClick={() => navigate('/history')}
+                            className="mm-btn-link"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.85rem' }}
+                        >
+                            <span>View All Executions</span>
+                            <ArrowRight size={14} />
+                        </button>
                     </div>
-                </div>
-
-                {/* Table */}
-                <div className="mm-table-wrapper">
-                    <table className="mm-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '90px' }}>Test ID</th>
-                                <th>Test Case</th>
-                                <th>Expected Result</th>
-                                <th>Actual Result</th>
-                                <th style={{ width: '140px' }}>Status</th>
-                                <th style={{ width: '50px' }}></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredCases.map((tc) => {
-                                const isExpanded = expandedRow === tc.id;
-                                const hasExtraInfo = tc.note || tc.reason || tc.bugId;
-
-                                return (
-                                    <React.Fragment key={tc.id}>
-                                        <tr
-                                            className={`mm-tr ${isExpanded ? 'tr-expanded' : ''} ${tc.status === 'FAIL' ? 'tr-fail' : ''}`}
-                                            onClick={() => setExpandedRow(isExpanded ? null : tc.id)}
-                                        >
-                                            <td className="font-mono text-gold fw-bold">{tc.id}</td>
-                                            <td className="fw-semibold">{tc.name}</td>
-                                            <td className="text-muted-fg">{tc.expectedResult}</td>
-                                            <td className="text-muted-fg">{tc.actualResult}</td>
-                                            <td>{renderStatusBadge(tc.status)}</td>
-                                            <td className="text-center">
-                                                {hasExtraInfo && (
-                                                    <button className="mm-expand-btn">
-                                                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                                    </button>
-                                                )}
-                                            </td>
-                                        </tr>
-
-                                        {/* Expanded Drawer Row for Details / Notes */}
-                                        {isExpanded && (
-                                            <tr className="mm-tr-details">
-                                                <td colSpan={6}>
-                                                    <div className="mm-details-box">
-                                                        {tc.payload && (
-                                                            <div className="mm-detail-item">
-                                                                <span className="mm-detail-label">Payload Executed:</span>
-                                                                <code className="mm-code-block">{tc.payload}</code>
-                                                            </div>
-                                                        )}
-
-                                                        {tc.bugId && (
-                                                            <div className="mm-detail-item text-fail">
-                                                                <span className="mm-detail-label">Linked Defect:</span>
-                                                                <span className="mm-bug-tag">
-                                                                    <Bug size={13} />
-                                                                    {tc.bugId}
-                                                                </span>
-                                                                <span className="ml-2">{tc.note}</span>
-                                                            </div>
-                                                        )}
-
-                                                        {tc.note && !tc.bugId && (
-                                                            <div className="mm-detail-item text-gold">
-                                                                <span className="mm-detail-label">Execution Note:</span>
-                                                                <span>{tc.note}</span>
-                                                            </div>
-                                                        )}
-
-                                                        {tc.reason && (
-                                                            <div className="mm-detail-item text-warn">
-                                                                <span className="mm-detail-label">Omission Reason:</span>
-                                                                <span>{tc.reason}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </React.Fragment>
-                                );
-                            })}
-                            {filteredCases.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="mm-empty-state">
-                                        No test cases found matching query "{searchQuery}".
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            {/* Bugs Section */}
-            <section className="mm-card mm-bugs-section">
-                <div className="mm-card-header">
-                    <div className="mm-card-title-group">
-                        <Bug size={18} className="text-fail" />
-                        <h3 className="mm-card-title">Defects & Bugs Identified</h3>
-                    </div>
-                    <span className="mm-badge badge-fail">{bugs.length} Open Defect</span>
                 </div>
 
                 <div className="mm-table-wrapper">
                     <table className="mm-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '90px' }}>Bug ID</th>
+                                <th style={{ width: '110px' }}>Execution ID</th>
+                                <th style={{ width: '90px' }}>Test Case</th>
                                 <th>Description</th>
-                                <th style={{ width: '120px' }}>Severity</th>
-                                <th style={{ width: '110px' }}>Status</th>
-                                <th style={{ width: '100px' }}>Linked Test</th>
+                                <th style={{ width: '80px' }}>Method</th>
+                                <th style={{ width: '90px' }}>Status</th>
+                                <th style={{ width: '130px' }}>HTTP Status</th>
+                                <th style={{ width: '110px' }}>Response Time</th>
+                                <th style={{ width: '130px' }}>Execution Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {bugs.map((b) => (
-                                <tr key={b.id} className="mm-tr tr-fail">
-                                    <td className="font-mono text-fail fw-bold">{b.id}</td>
-                                    <td>{b.description}</td>
-                                    <td>
-                                        <span className="mm-badge badge-severity-medium">
-                                            <ShieldAlert size={12} />
-                                            {b.severity}
-                                        </span>
+                            {displayExecutions.length === 0 ? (
+                                <tr>
+                                    <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: '#64748B' }}>
+                                        No recent test executions recorded yet. Create and run tests to see results here.
                                     </td>
-                                    <td>
-                                        <span className="mm-badge badge-status-open">{b.status}</span>
-                                    </td>
-                                    <td className="font-mono text-gold">{b.testCaseId}</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                displayExecutions.slice(0, 5).map((item) => (
+                                    <tr key={item.id} className={`mm-tr ${item.status === 'FAIL' ? 'tr-fail' : ''}`}>
+                                        <td className="font-mono text-indigo fw-bold">{item.id}</td>
+                                        <td className="font-mono text-muted">{item.testCaseId}</td>
+                                        <td className="fw-semibold" style={{ color: '#F8FAFC' }}>{item.description}</td>
+                                        <td>
+                                            <span className="mm-method-pill font-mono">{item.method}</span>
+                                        </td>
+                                        <td>
+                                            <span className={`qa-badge ${item.status === 'PASS' ? 'badge-pass' : 'badge-fail'}`}>
+                                                {item.status}
+                                            </span>
+                                        </td>
+                                        <td className="font-mono" style={{ color: item.status === 'FAIL' ? '#F87171' : '#34D399', fontWeight: 600 }}>
+                                            {item.httpStatus}
+                                        </td>
+                                        <td className="font-mono text-muted">{item.responseTime}</td>
+                                        <td className="font-mono text-muted" style={{ fontSize: '0.8rem' }}>
+                                            <Clock size={12} style={{ display: 'inline', marginRight: '4px' }} />
+                                            {item.date}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            {/* Interactive Live API Runner Section */}
-            <section className="mm-card mm-runner-section">
-                <div className="mm-card-header">
-                    <div className="mm-card-title-group">
-                        <Zap size={18} className="text-gold" />
-                        <h3 className="mm-card-title">Interactive Live API Runner</h3>
+            {/* RECENT BUGS TABLE (Deduplicated Unique Defects with Occurrences) */}
+            <section className="mm-dash-card mm-bugs-card">
+                <div className="mm-card-top-bar">
+                    <div>
+                        <div className="mm-card-pretitle">DEDUPLICATED DEFECT LOGS</div>
+                        <h3 className="mm-card-heading">
+                            Recent Bugs (Showing {Math.min(5, displayBugs.length)} of {metrics.bugCount} unique defects)
+                        </h3>
                     </div>
-                    <span className="mm-card-badge">Demo Playground</span>
+                    <button onClick={() => navigate('/bugs')} className="mm-btn-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <span>View All Defects</span>
+                        <ArrowRight size={14} />
+                    </button>
                 </div>
 
-                <div className="mm-runner-grid">
-                    <div className="mm-runner-controls">
-                        <div className="mm-form-group">
-                            <label className="mm-label">Target Endpoint URL:</label>
-                            <div className="mm-select-group">
-                                <select
-                                    value={liveTargetUrl}
-                                    onChange={(e) => setLiveTargetUrl(e.target.value)}
-                                    className="mm-select"
-                                >
-                                    <option value={LOCAL_API_ENDPOINT}>Local API (http://localhost:3000/api/messages)</option>
-                                    <option value={API_ENDPOINT}>Public Tunnel ({API_ENDPOINT})</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="mm-form-group">
-                            <label className="mm-label">JSON Request Body:</label>
-                            <textarea
-                                value={livePayload}
-                                onChange={(e) => setLivePayload(e.target.value)}
-                                rows={4}
-                                className="mm-textarea font-mono"
-                                placeholder='{"message": "Hello World"}'
-                            />
-                        </div>
-
-                        <div className="mm-runner-actions">
-                            <button
-                                className="mm-run-btn"
-                                onClick={handleRunLiveTest}
-                                disabled={isTestingLive}
-                            >
-                                {isTestingLive ? (
-                                    <>
-                                        <RefreshCw size={15} className="mm-spin" />
-                                        <span>Executing API Call...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Play size={15} />
-                                        <span>Run Live API Test</span>
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Live Output View */}
-                    <div className="mm-runner-output">
-                        <label className="mm-label">Live Response Output:</label>
-                        <div className="mm-response-box">
-                            {liveResponse ? (
-                                <div>
-                                    <div className="mm-response-meta">
-                                        <span className={`mm-status-pill ${liveResponse.ok ? 'res-200' : 'res-400'}`}>
-                                            HTTP {liveResponse.status}
-                                        </span>
-                                        <span className="mm-time-pill">{liveResponse.timeMs} ms</span>
-                                    </div>
-                                    <pre className="mm-json-output">
-                                        {JSON.stringify(liveResponse.data, null, 2)}
-                                    </pre>
-                                </div>
+                <div className="mm-table-wrapper">
+                    <table className="mm-table">
+                        <thead>
+                            <tr>
+                                <th style={{ width: '100px' }}>Bug ID</th>
+                                <th>Bug Title</th>
+                                <th style={{ width: '110px' }}>Severity</th>
+                                <th style={{ width: '110px' }}>Occurrences</th>
+                                <th style={{ width: '110px' }}>Test Case</th>
+                                <th style={{ width: '100px' }}>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {displayBugs.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#64748B' }}>
+                                        No defects logged. All executed test cases passed!
+                                    </td>
+                                </tr>
                             ) : (
-                                <div className="mm-response-placeholder">
-                                    <Terminal size={24} className="text-muted" />
-                                    <span>Click "Run Live API Test" to execute a live request</span>
-                                </div>
+                                displayBugs.slice(0, 5).map((b) => (
+                                    <tr key={b.id} className="mm-tr tr-fail">
+                                        <td className="font-mono text-rose fw-bold">{b.id}</td>
+                                        <td className="fw-semibold" style={{ color: '#F8FAFC' }}>
+                                            {b.title}
+                                        </td>
+                                        <td>
+                                            <span className="mm-sev-badge sev-critical">
+                                                <ShieldAlert size={12} />
+                                                <span>{b.severity}</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className="qa-badge" style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#F87171', fontWeight: 700 }}>
+                                                {b.occurrences} {b.occurrences === 1 ? 'run' : 'runs'}
+                                            </span>
+                                        </td>
+                                        <td className="font-mono text-muted">{b.testCase}</td>
+                                        <td>
+                                            <span className="qa-badge badge-fail">{b.status}</span>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
-                        </div>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </section>
         </div>

@@ -2,31 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MicroMind V4 Executive Gold Skin - Dark Mode (Default) */
+/* Modern AI SaaS Developer Suite - Dark Theme (Default) */
 :root,
 [data-theme="dark"] {
-  /* Core Colors - Dark Mode */
-  --bg-page: #0F0F0F;
-  /* Deep Night */
-  --bg-surface: #1C1C1C;
-  /* Carbon */
-  --bg-card: #1C1C1C;
-  /* Card background */
-  --bg-input: #0F0F0F;
-  /* Input backgrounds */
-  --bg-hover: #262626;
-  /* Hover state */
+  /* Core Colors - Dark AI SaaS Mode */
+  --bg-page: #0B0F19;           /* Deep Slate / Dark Space */
+  --bg-surface: rgba(17, 24, 39, 0.7);  /* Glass Surface */
+  --bg-card: rgba(17, 24, 39, 0.65);
+  --bg-card-solid: #111827;
+  --bg-input: rgba(15, 23, 42, 0.85);
+  --bg-hover: rgba(30, 41, 59, 0.7);
 
-  --primary: #E0AA3E;
-  /* Executive Gold */
-  --text-main: #F2F3EC;
-  /* Bone White */
-  --text-muted: #888888;
-  /* Tech Grey */
-  --border: #333333;
-  /* Subtle Grey */
+  /* AI Accents - Modern Indigo / Violet / Cyan */
+  --primary: #6366F1;           /* Indigo AI Accent */
+  --primary-hover: #4F46E5;
+  --primary-light: rgba(99, 102, 241, 0.15);
+  --primary-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --accent-violet: #8B5CF6;
+  --accent-cyan: #06B6D4;
+  --accent-pink: #EC4899;
 
-  /* Legacy Map (Mappings to keep existing code working while we refactor) */
+  --text-main: #F8FAFC;         /* High contrast white */
+  --text-muted: #94A3B8;        /* Soft slate text */
+  --text-dim: #64748B;          /* Muted text */
+  --border: rgba(255, 255, 255, 0.08); /* Soft glass border */
+  --border-hover: rgba(99, 102, 241, 0.35);
+
+  /* Legacy Mappings to ensure full backwards compatibility */
   --primary-color: var(--primary);
   --secondary-color: var(--bg-surface);
   --bg-color: var(--bg-page);
@@ -35,44 +37,49 @@
   --text-secondary: var(--text-muted);
   --border-color: var(--border);
 
-  --accent-color: #2CA58D;
-  --danger-color: #EF4444;
-  --warning-color: #F59E0B;
-  --success-color: #10B981;
+  --accent-color: #06B6D4;
+  --danger-color: #EF4444;      /* Rose red */
+  --warning-color: #F59E0B;     /* Amber */
+  --success-color: #10B981;     /* Emerald green */
 
-  /* Typography */
-  --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --heading-font: 'Outfit', sans-serif;
+  /* Modern Typography & Spacing */
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --heading-font: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
+  /* Shadows & Glassmorphism */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+  --glass-backdrop: blur(12px);
 }
 
-/* Light Mode Theme - High Contrast Slate & Executive Gold */
+/* Light Mode Theme - High Contrast Executive Developer Mode */
 [data-theme="light"],
 html[data-theme="light"],
 body.light-mode {
-  /* Core Colors - Light Mode */
-  --bg-page: #F8FAFC;       /* Slate 50 background */
-  --bg-surface: #FFFFFF;    /* Clean white surface */
+  --bg-page: #F8FAFC;           /* Slate 50 */
+  --bg-surface: rgba(255, 255, 255, 0.9);
   --bg-card: #FFFFFF;
-  --bg-input: #F1F5F9;      /* Slate 100 inputs */
-  --bg-hover: #E2E8F0;      /* Slate 200 hover */
+  --bg-card-solid: #FFFFFF;
+  --bg-input: #F1F5F9;
+  --bg-hover: #E2E8F0;
 
-  --primary: #B8860B;       /* Executive Gold */
-  --text-main: #0F172A;     /* Slate 900 High Contrast Text */
-  --text-muted: #475569;    /* Slate 600 Visible Secondary Text */
-  --border: #CBD5E1;        /* Slate 300 Visible Borders */
+  --primary: #4F46E5;           /* Rich Indigo */
+  --primary-hover: #4338CA;
+  --primary-light: rgba(79, 70, 229, 0.1);
+  --primary-gradient: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  --accent-violet: #7C3AED;
+  --accent-cyan: #0891B2;
+  --accent-pink: #DB2777;
 
-  /* Legacy Map - Light Mode */
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-dim: #64748B;
+  --border: #E2E8F0;
+  --border-hover: rgba(79, 70, 229, 0.4);
+
   --primary-color: var(--primary);
   --secondary-color: var(--bg-surface);
   --bg-color: var(--bg-page);
@@ -81,22 +88,24 @@ body.light-mode {
   --text-secondary: var(--text-muted);
   --border-color: var(--border);
 
-  --accent-color: #0D9488;
   --danger-color: #DC2626;
   --warning-color: #D97706;
   --success-color: #16A34A;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+  --glass-backdrop: blur(10px);
 }
 
 body {
   margin: 0;
   font-family: var(--font-family);
-  background-color: var(--bg-color);
-  color: var(--text-primary);
+  background-color: var(--bg-page);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .dashboard-container {

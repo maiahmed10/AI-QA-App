@@ -12,6 +12,8 @@ const AIQAChatbotPage = lazy(() => import('./pages/AIQAChatbotPage'));
 const QATestCasesPage = lazy(() => import('./pages/QATestCasesPage'));
 const QATestResultsPage = lazy(() => import('./pages/QATestResultsPage'));
 const QATestingHistoryPage = lazy(() => import('./pages/QATestingHistoryPage'));
+const QADetectedBugsPage = lazy(() => import('./pages/QADetectedBugsPage'));
+const QAReportsPage = lazy(() => import('./pages/QAReportsPage'));
 const QASettingsPage = lazy(() => import('./pages/QASettingsPage'));
 
 // Preserved Legacy Pages
@@ -41,8 +43,8 @@ const LoadingFallback = () => (
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--bg-page, #0F0F0F)',
-        color: 'var(--text-primary, #F2F3EC)',
+        background: 'var(--bg-page, #0B0F19)',
+        color: 'var(--text-main, #F8FAFC)',
     }}>
         <div style={{ textAlign: 'center' }}>
             <div style={{
@@ -55,24 +57,24 @@ const LoadingFallback = () => (
                     position: 'absolute',
                     inset: 0,
                     borderRadius: '50%',
-                    border: '3px solid rgba(224,170,62,0.15)',
-                    borderTopColor: '#E0AA3E',
+                    border: '3px solid rgba(99, 102, 241, 0.2)',
+                    borderTopColor: '#6366F1',
                     animation: 'mm-spin 1s linear infinite',
                 }} />
             </div>
             <div style={{
                 fontSize: '1.1rem',
-                fontWeight: 700,
+                fontWeight: 800,
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
-                color: '#E0AA3E',
+                color: '#6366F1',
                 marginBottom: '6px',
-            }}>MicroMind QA Suite</div>
+            }}>AI QA Testing Platform</div>
             <div style={{
                 fontSize: '0.75rem',
                 letterSpacing: '0.1em',
-                color: '#888',
-            }}>Loading Professional App...</div>
+                color: '#94A3B8',
+            }}>Loading Workspace...</div>
         </div>
         <style>{`
             @keyframes mm-spin {
@@ -97,6 +99,12 @@ function App() {
                             <Route path="/" element={<QATestingAssistantPage />} />
                             <Route path="/dashboard" element={<QATestingAssistantPage />} />
                             <Route path="/qa" element={<QATestingAssistantPage />} />
+
+                            {/* Section 10: Dedicated Detected Bugs Page */}
+                            <Route path="/bugs" element={<QADetectedBugsPage />} />
+
+                            {/* Dedicated Reports Page */}
+                            <Route path="/reports" element={<QAReportsPage />} />
 
                             {/* Page 3: AI QA Testing Workspace */}
                             <Route path="/ai-qa-testing" element={<AIQATestingPage />} />

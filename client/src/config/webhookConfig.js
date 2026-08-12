@@ -8,7 +8,7 @@ const STORAGE_KEY_HEADERS = 'qa_assistant_webhook_headers';
 const STORAGE_KEY_MODE = 'qa_assistant_webhook_mode'; // 'live' or 'demo'
 
 // Default fallback webhook URL (can be set via .env or user input in settings modal)
-export const DEFAULT_WEBHOOK_URL = import.meta.env.VITE_QA_WEBHOOK_URL || 'http://localhost:3000/api/v1/ai/qa-analyze';
+export const DEFAULT_WEBHOOK_URL = import.meta.env.VITE_QA_WEBHOOK_URL || 'https://core.aimicromind.com/webhook/61ed0540-8d82-41e9-aeb6-2ecc7b6fb1b8/webhook';
 
 export const getWebhookConfig = () => {
     const savedUrl = localStorage.getItem(STORAGE_KEY_URL);

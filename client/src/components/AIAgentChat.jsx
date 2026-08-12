@@ -343,8 +343,9 @@ const AIAgentChat = () => {
 
             // Call our backend API which proxies to MicroMind Core
             const token = localStorage.getItem('token');
+            const apiBase = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : '');
             const response = await fetch(
-                "http://localhost:3000/api/v1/ai/chat/micromind",
+                `${apiBase}/api/v1/ai/chat/micromind`,
                 {
                     method: "POST",
                     headers: {
@@ -388,7 +389,7 @@ const AIAgentChat = () => {
                     // Convert relative URL to absolute backend URL if needed
                     let artifactUrl = artifact.url;
                     if (artifactUrl && !artifactUrl.startsWith('http')) {
-                        artifactUrl = `http://localhost:3000${artifactUrl}`;
+                        artifactUrl = `${apiBase}${artifactUrl}`;
                     }
                     return {
                         ...artifact,
