@@ -176,8 +176,14 @@ export const parseQATestResult = (rawOutput) => {
     const bugs = (isFail || bugDescription) ? 1 : 0;
 
     const resultObject = {
+        ...(typeof payload === 'object' && payload !== null ? payload : {}),
         raw: rawOutput,
         rawText: textString,
+        requirement_understanding: (typeof payload === 'object' && payload !== null ? (payload.requirement_understanding || payload.requirementUnderstanding || payload.objective || payload.summary) : null) || testDesc,
+        test_cases: (typeof payload === 'object' && payload !== null ? (payload.test_cases || payload.testCases || payload.scenarios || payload.cases) : null),
+        expected_status_code: expectedStatus,
+        actual_status_code: actualStatus,
+        response_time: responseTime,
         status: finalStatus,
         resultText: isUnavailable ? 'Result unavailable' : finalStatus,
         isPass,

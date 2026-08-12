@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { analyzeRequirementWithWebhook } from '../services/qaWebhookService';
 import { saveTestingRecord } from '../services/qaHistoryService';
-import { addBug, addTestCase } from '../services/qaTestCaseService';
+import { addBug, addTestCase, getTestCases } from '../services/qaTestCaseService';
 import { LOCAL_API_ENDPOINT } from '../data/qaTestData';
 import {
     Cpu,
@@ -102,14 +102,17 @@ const AIQATestingPage = () => {
                 expectedBehaviorText = webhookAnalysis.expected_status_code || (isNegative ? 'HTTP 400 Bad Request' : 'HTTP 200 OK');
             }
 
-            setAnalysisData({
+            const newAnalysis = {
                 testObjective: webhookAnalysis.requirement_understanding || `Verify that ${httpMethod} ${apiEndpoint} handles the requirement correctly.`,
                 testType: testType,
                 preconditions: `Target API endpoint ${apiEndpoint} is reachable over ${httpMethod}.`,
                 testData: httpMethod === 'POST' ? requestBodyText : 'None (GET Request)',
                 expectedBehavior: expectedBehaviorText,
                 raw: webhookAnalysis
-            });
+            };
+
+            setAnalysisData(newAnalysis);
+            generateCasesFromAnalysis(newAnalysis);
 
         } catch (err) {
             console.error('Analysis Error:', err);
@@ -120,12 +123,35 @@ const AIQATestingPage = () => {
     };
 
     // SECTION 3: Generate Test Cases Handler
-    const handleGenerateTestCases = () => {
-        if (!analysisData) return;
+    const generateCasesFromAnalysis = (currentAnalysis) => {
+        const analysis = currentAnalysis || analysisData;
+        if (!analysis) return;
 
         let cases = [];
 
-        if (httpMethod === 'GET') {
+        // Derive next available Test Case ID dynamically from existing test cases
+        const currentCases = getTestCases();
+        let maxNum = 0;
+        currentCases.forEach(tc => {
+            const num = parseInt((tc.id || '').replace(/\D/g, ''), 10);
+            if (!isNaN(num) && num > maxNum) maxNum = num;
+        });
+
+        const getNextId = () => `TC-${String(++maxNum).padStart(3, '0')}`;
+
+        const rawCases = analysis.raw?.test_cases || analysis.raw?.scenarios || analysis.raw?.cases;
+
+        if (Array.isArray(rawCases) && rawCases.length > 0) {
+            cases = rawCases.map(item => ({
+                id: getNextId(),
+                description: item.description || item.name || item.title || `${httpMethod} ${apiEndpoint} — AI Scenario`,
+                type: item.type || (item.expectedResult?.includes('400') || item.expectedResult?.includes('404') ? 'Negative' : 'Positive'),
+                requestMethod: item.method || httpMethod,
+                endpoint: item.endpoint || apiEndpoint,
+                requestData: typeof item.requestData === 'object' ? JSON.stringify(item.requestData, null, 2) : (item.requestData || item.payload || (httpMethod === 'POST' ? requestBodyText : 'None')),
+                expectedResult: item.expectedResult || item.expected || analysis.expectedBehavior
+            }));
+        } else if (httpMethod === 'GET') {
             const getDetails = deriveGetTestDetails(apiEndpoint, requirementText);
             const isNegativeGet = getDetails.testType === 'Negative';
 
@@ -133,7 +159,7 @@ const AIQATestingPage = () => {
                 const validEndpoint = apiEndpoint.replace(/\/(999+|invalid|non-?existent|unknown|fake).*/i, '/1');
                 cases = [
                     {
-                        id: 'TC-006',
+                        id: getNextId(),
                         description: `GET ${apiEndpoint} — Non-Existent Resource Retrieval`,
                         type: 'Negative',
                         requestMethod: 'GET',
@@ -142,7 +168,7 @@ const AIQATestingPage = () => {
                         expectedResult: 'HTTP 404 Not Found'
                     },
                     {
-                        id: 'TC-005',
+                        id: getNextId(),
                         description: `GET ${validEndpoint} — Valid Resource Standard Retrieval`,
                         type: 'Positive',
                         requestMethod: 'GET',
@@ -158,7 +184,7 @@ const AIQATestingPage = () => {
 
                 cases = [
                     {
-                        id: 'TC-005',
+                        id: getNextId(),
                         description: `GET ${apiEndpoint} — Valid Existing Resource Retrieval`,
                         type: 'Positive',
                         requestMethod: 'GET',
@@ -167,7 +193,7 @@ const AIQATestingPage = () => {
                         expectedResult: 'HTTP 200 OK and valid response data'
                     },
                     {
-                        id: 'TC-006',
+                        id: getNextId(),
                         description: `GET ${invalidEndpoint} — Non-Existent Resource Edge Case`,
                         type: 'Negative',
                         requestMethod: 'GET',
@@ -181,16 +207,16 @@ const AIQATestingPage = () => {
             const isNegative = requirementText.toLowerCase().includes('reject') || requirementText.toLowerCase().includes('400') || requestBodyText.includes('""');
             cases = [
                 {
-                    id: 'TC-001',
+                    id: getNextId(),
                     description: `POST ${apiEndpoint} — ${requirementText.slice(0, 45)}`,
                     type: isNegative ? 'Negative' : 'Positive',
                     requestMethod: 'POST',
                     endpoint: apiEndpoint,
                     requestData: requestBodyText,
-                    expectedResult: analysisData.expectedBehavior
+                    expectedResult: analysis.expectedBehavior
                 },
                 {
-                    id: 'TC-002',
+                    id: getNextId(),
                     description: `POST ${apiEndpoint} — Valid Standard Payload Pass`,
                     type: 'Positive',
                     requestMethod: 'POST',
@@ -199,7 +225,7 @@ const AIQATestingPage = () => {
                     expectedResult: 'HTTP 200 OK'
                 },
                 {
-                    id: 'TC-003',
+                    id: getNextId(),
                     description: `POST ${apiEndpoint} — Empty Payload Edge Case Validation`,
                     type: 'Negative',
                     requestMethod: 'POST',
@@ -226,6 +252,10 @@ const AIQATestingPage = () => {
 
         setGeneratedTestCases(cases);
         setSelectedIds(cases.map(c => c.id));
+    };
+
+    const handleGenerateTestCases = () => {
+        generateCasesFromAnalysis(analysisData);
     };
 
     // Selection Handlers

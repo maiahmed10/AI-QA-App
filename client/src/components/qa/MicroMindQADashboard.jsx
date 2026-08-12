@@ -57,11 +57,18 @@ const MicroMindQADashboard = () => {
             setHistoryList(getTestingHistory());
         };
 
+        handleSync();
+
         window.addEventListener('qa_test_cases_updated', handleSync);
         window.addEventListener('qa_testing_history_updated', handleSync);
+        window.addEventListener('focus', handleSync);
+        window.addEventListener('storage', handleSync);
+
         return () => {
             window.removeEventListener('qa_test_cases_updated', handleSync);
             window.removeEventListener('qa_testing_history_updated', handleSync);
+            window.removeEventListener('focus', handleSync);
+            window.removeEventListener('storage', handleSync);
         };
     }, []);
 

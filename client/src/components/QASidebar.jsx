@@ -249,8 +249,8 @@ const QASidebar = () => {
 
                                 <div className="qa-help-card">
                                     <Shield size={20} className="qa-help-icon" />
-                                    <h4>4. Webhook & Integration</h4>
-                                    <p>Configure custom N8N/AI webhooks in Settings to sync test results to Jira, Slack, or GitHub CI/CD pipelines.</p>
+                                    <h4>4. AI QA Workflow</h4>
+                                    <p>Test requirements are analyzed by AI, executed against the target API, and evaluated by comparing actual results with expected results. The platform then records the execution result and identifies potential defects.</p>
                                 </div>
                             </div>
                         </div>
