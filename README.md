@@ -1,90 +1,113 @@
-🤖 AI QA Testing Platform
+# 🤖 AI QA Testing Platform
 
-An AI-powered QA platform for automating API testing, generating test cases, validating responses, and tracking test execution results.
+> An AI-powered QA platform for automating API testing, generating test cases, validating responses, and tracking test execution results.
 
-🚀 Overview
+## 🚀 Overview
 
-AI QA Testing Platform is an AI-powered application designed to simplify API testing and reduce repetitive manual QA work.
+**AI QA Testing Platform** is an AI-powered application designed to simplify API testing and reduce repetitive manual QA work.
 
 The platform allows users to create and manage test cases, execute API tests, analyze the results, and track testing history through an interactive dashboard.
 
-The project was developed as the Final Project for the AI MicroMind Summer Training Program 2026, using the MicroMind Base SaaS Template and MicroMind Core for the AI-powered testing workflow.
+The project was developed as the **Final Project for the AI MicroMind Summer Training Program 2026**, using the MicroMind Base SaaS Template and MicroMind Core for the AI-powered testing workflow.
 
-✨ Key Features
-🧪 API Testing
-Support for GET and POST requests
-Execute API test cases
-Validate expected and actual HTTP status codes
-Validate API response behavior
-Support positive and negative test scenarios
-Response time tracking
-🤖 AI-Powered QA
-Generate and analyze test cases using AI
-Convert testing requirements into structured test cases
-Determine PASS / FAIL results
-Compare expected vs. actual behavior
-Identify unexpected API behavior
-Return structured QA results
-📋 Test Case Management
-Create new test cases
-Define HTTP method and endpoint
-Add request data and testing requirements
-Generate test cases with different scenarios
-Organize and review test cases before execution
-▶️ Test Execution
-Select test cases for execution
-Execute API requests automatically
-Display execution status
-Show expected vs. actual results
-Track response time
-Record execution history
-📊 QA Dashboard
+---
+
+## ✨ Key Features
+
+### 🧪 API Testing
+
+* Support for `GET` and `POST` requests
+* Execute API test cases
+* Validate expected and actual HTTP status codes
+* Validate API response behavior
+* Support positive and negative test scenarios
+* Response time tracking
+
+### 🤖 AI-Powered QA
+
+* Generate and analyze test cases using AI
+* Convert testing requirements into structured test cases
+* Determine `PASS` / `FAIL` results
+* Compare expected vs. actual behavior
+* Identify unexpected API behavior
+* Return structured QA results
+
+### 📋 Test Case Management
+
+* Create new test cases
+* Define HTTP method and endpoint
+* Add request data and testing requirements
+* Generate test cases with different scenarios
+* Organize and review test cases before execution
+
+### ▶️ Test Execution
+
+* Select test cases for execution
+* Execute API requests automatically
+* Display execution status
+* Show expected vs. actual results
+* Track response time
+* Record execution history
+
+### 📊 QA Dashboard
 
 The dashboard provides an overview of testing activity, including:
 
-Total test cases
-Passed tests
-Failed tests
-Executed tests
-Test execution history
-Visual testing analytics
-🐛 Defect Identification
+* Total test cases
+* Passed tests
+* Failed tests
+* Executed tests
+* Test execution history
+* Visual testing analytics
+
+### 🐛 Defect Identification
 
 The platform helps highlight potential API issues such as:
 
-Unexpected HTTP status codes
-Invalid API responses
-Incorrect input handling
-Unexpected response behavior
-🔄 QA Workflow
+* Unexpected HTTP status codes
+* Invalid API responses
+* Incorrect input handling
+* Unexpected response behavior
+
+---
+
+## 🔄 QA Workflow
 
 The platform follows this workflow:
 
-Create or define a test case
-Generate or process the test case using AI
-Send the API request
-Capture the API response
-Validate the expected behavior
-Compare expected vs. actual results
-Determine PASS / FAIL
-Store the execution result
-Display the result and testing history on the dashboard
-🧠 AI Workflow
+1. Create or define a test case
+2. Generate or process the test case using AI
+3. Send the API request
+4. Capture the API response
+5. Validate the expected behavior
+6. Compare expected vs. actual results
+7. Determine `PASS` / `FAIL`
+8. Store the execution result
+9. Display the result and testing history on the dashboard
 
-The AI-powered QA workflow was built using MicroMind Core.
+---
 
-Main Components
-Webhook Trigger
-LLM Chain
-AI / Tool Agent
-API Request Tool
-Structured Output Parser
-Response Processing
-Webhook Response
+## 🧠 AI Workflow
+
+The AI-powered QA workflow was built using **MicroMind Core**.
+
+### Main Components
+
+* Webhook Trigger
+* LLM Chain
+* AI / Tool Agent
+* API Request Tool
+* Structured Output Parser
+* Response Processing
+* Webhook Response
 
 The workflow connects the testing requirement with the API request and returns a structured QA result that can be displayed by the platform.
 
-🏗️ System Architecture
+---
+
+## 🏗️ System Architecture
+
+```text
 ┌─────────────────────┐
 │      User / UI      │
 └──────────┬──────────┘
@@ -119,36 +142,52 @@ The workflow connects the testing requirement with the API request and returns a
 │   QA Test Results   │
 │      PASS / FAIL    │
 └─────────────────────┘
-🛠️ Tech Stack
-Layer	Technologies
-Frontend	React, Vite
-Backend	Node.js, Express
-AI	MicroMind Core
-Workflow	AI Agents, LLM Chain, Webhooks
-API Testing	HTTP GET / POST
-UI	MicroMind V4 SDK
-Database	PostgreSQL / Prisma
-Version Control	Git & GitHub
-📈 Future Improvements
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer           | Technologies                   |
+| --------------- | ------------------------------ |
+| Frontend        | React, Vite                    |
+| Backend         | Node.js, Express               |
+| AI              | MicroMind Core                 |
+| Workflow        | AI Agents, LLM Chain, Webhooks |
+| API Testing     | HTTP GET / POST                |
+| UI              | MicroMind V4 SDK               |
+| Database        | PostgreSQL / Prisma            |
+| Version Control | Git & GitHub                   |
+
+---
+
+## 📈 Future Improvements
 
 Planned improvements include:
 
-Support for additional HTTP methods such as PUT, PATCH, and DELETE
-Authentication testing
-Regression testing
-Test suites and collections
-Exportable QA reports
-More advanced response validation
-More detailed defect analysis
-Advanced analytics
-CI/CD integration
-🧩 Project Foundation
+* Support for additional HTTP methods such as `PUT`, `PATCH`, and `DELETE`
+* Authentication testing
+* Regression testing
+* Test suites and collections
+* Exportable QA reports
+* More advanced response validation
+* More detailed defect analysis
+* Advanced analytics
+* CI/CD integration
 
-This project was developed using the MicroMind Base SaaS Template, which provided the foundation for the application.
+---
+
+## 🧩 Project Foundation
+
+This project was developed using the **MicroMind Base SaaS Template**, which provided the foundation for the application.
 
 The template was extended and customized to build an AI-powered QA testing platform focused on automated API testing and AI-assisted QA analysis.
 
-📂 Project Structure
+---
+
+## 📂 Project Structure
+
+```text
 AI-QA-App/
 │
 ├── client/
@@ -171,37 +210,61 @@ AI-QA-App/
 ├── .ai/
 ├── README.md
 └── package.json
-🚀 Getting Started
-1. Clone the repository
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
 git clone https://github.com/maiahmed10/AI-QA-App.git
 cd AI-QA-App
-2. Install dependencies
+```
+
+### 2. Install dependencies
+
+```bash
 cd client
 npm install
 
 cd ../server
 npm install
-3. Configure environment variables
+```
 
-Create the required .env files and configure the required application, database, AI, and API settings.
+### 3. Configure environment variables
 
-4. Start the application
+Create the required `.env` files and configure the required application, database, AI, and API settings.
 
-Backend:
+### 4. Start the application
 
+**Backend:**
+
+```bash
 npm run dev
+```
 
-Frontend:
+**Frontend:**
 
+```bash
 npm run dev
-👩‍💻 Author
+```
 
-Mai Ahmed
+---
+
+## 👩‍💻 Author
+
+**Mai Ahmed**
 
 Artificial Intelligence Engineering Student
 
-📄 License
+---
+
+## 📄 License
 
 This project is based on the MicroMind Base SaaS Template and follows the applicable licensing and attribution requirements of the original template.
 
-⭐ AI-QA-App — Making API testing smarter with AI.
+---
+
+⭐ **AI-QA-App — Making API testing smarter with AI.**
